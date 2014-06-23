@@ -1,0 +1,29 @@
+{% extends "_templates/base.twig" %}
+
+{% block masthead %}
+{% endblock %}
+
+{% block content %}
+	<form name="formData" action="reportData/list0-createCollegeList.php" method="POST" id="formData" class="hide">
+	<!-- <form name="formData" action="reportData/list0-createCollegeList.php" method="POST" id="formData"> -->
+			<textarea id="collegeData" name="collegeData"></textarea>
+			<textarea id="departmentData" name="departmentData"></textarea>
+			<input type="submit" value="Submit">
+	</form>
+	<p class="lead">This form will allow you to choose the Colleges and Departments to be displayed in the Syllabus Tracker</p>
+	<p>Click the <a class="btn btn-mini"><i class="icon-remove"></i></a> next to a college or department to unselect it. Click "Save List" when you have made your selections.</p>
+	<div class="alert">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<strong>Warning!</strong> After changes are made to this list, you will need to regenerate any semester data to include added accounts.
+	</div>
+	{% for account in primary_account %}
+		<h2 id="account_{{ account.id }}" rel="{{ account.id }}">
+			{{ account.name }} <small>(Account ID: {{ account.id }})</small>
+			<a href="#" class="generateData btn pull-right">Save List</a>
+			<a href="index.php" class="btn btn-primary trackerLink pull-right">Go to Syllabus Tracker</a>
+		</h2>
+		<div class="well" id="subaccounts_{{ account.id }}">
+			<strong><i class="icon-spin icon-spinner"></i> Gathering Account Information from Canvas</strong>
+		</div>
+	{% endfor %}
+{% endblock %}
