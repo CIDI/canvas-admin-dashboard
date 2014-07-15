@@ -1,12 +1,16 @@
+var BASE_URL = "";
+
 (function($){
   
   $(function() {
+  		BASE_URL = $('body').data('base-url');
+  		
 		$('.control-accountState button').on('click', function(){
 			var state = $(this).val();
 			var parentListElement = $(this).closest('li');
 			
 			$.ajax({
-				url: '/accounts/state/' + state,
+				url: BASE_URL + 'accounts/state/' + state,
 				data: {
 					id: parentListElement.attr('rel')
 				},

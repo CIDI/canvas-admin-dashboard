@@ -67,6 +67,20 @@ class Controller
         return new $model_name($this->db, $table_name);
     }
 
+    public function loadReport($report_name)
+    {
+        require_once 'application/libs/reports/basereport.php';
+        
+        if(file_exists('application/libs/reports/' . strtolower($report_name) . '.php')) {
+          require_once 'application/libs/reports/' . strtolower($report_name) . '.php';
+        } else {
+          $report_name = 'BaseReport';
+        }
+        
+        // return new model (and pass the database connection to the model)
+        return new $report_name($this);
+    }
+
     public function render($view, $data_array = array())
     {
         // load Twig, the template engine

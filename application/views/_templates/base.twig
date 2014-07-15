@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="{{ constant('URL') }}public/ico/favicon.ico">
+    <link rel="shortcut icon" href="{{ constant('STATIC_URL') }}public/ico/favicon.ico">
 		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css">
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
 
     <title>
 			{% block page_title %}
@@ -16,7 +17,7 @@
 		</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="{{ constant('URL') }}public/css/style.css" rel="stylesheet">
+    <link href="{{ constant('STATIC_URL') }}public/css/style.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -25,7 +26,7 @@
     <![endif]-->
   </head>
 
-  <body>
+  <body data-base-url="{{ constant('URL') }}">
 
     {% block topbar %}
       {% include '_templates/topbar.twig' %}
@@ -52,8 +53,8 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    <script src="{{ constant('URL') }}public/js/application.js"></script>
-    <script src="{{ constant('URL') }}public/js/{{ _app.request.controller }}.js"></script>		
+    <script src="{{ constant('STATIC_URL') }}public/js/application.js"></script>
+    <script src="{{ constant('STATIC_URL') }}public/js/{{ _app.request.controller }}.js"></script>		
 		
   </body>
 </html>

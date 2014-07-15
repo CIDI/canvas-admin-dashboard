@@ -131,7 +131,7 @@ class BaseModel {
       
       $querystring = "INSERT INTO $this->table ($columns)
                       VALUES ($values)";
-              
+
       $query = $this->connection->prepare($querystring);
       $result = $query->execute($data);
 
@@ -205,14 +205,14 @@ class BaseModel {
   		
   		foreach($properties AS $field=>$value) {
             if(!strstr($field, '__')) {
-                $whereFilter .= "$this->table.$field = :$field AND";
+                $whereFilter .= "$this->table.$field = :$field AND ";
             } else {
                 $column = str_replace('__', '.', $field);
-                $whereFilter .= "$column = :$field AND";
+                $whereFilter .= "$column = :$field AND ";
             }
         }
 
-		$whereFilter = preg_replace('/ AND$/', '', $whereFilter);
+		$whereFilter = preg_replace('/ AND $/', '', $whereFilter);
 		
 		if ($softDelete == true) {
 			$querystring = "UPDATE $this->table

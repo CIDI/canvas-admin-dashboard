@@ -47,7 +47,7 @@ class Accounts extends Controller
 		
 		// get all of the accounts that are in the database now
 		$accountModel = $this->loadModel('AccountModel');
-	  $data = array(
+	  	$data = array(
 			'accounts'=>$accountModel->findAll(
 				array('depth'=>2),
 				'accounts.*, parent_account.name AS parent_name, parent_account.include AS parent_include',

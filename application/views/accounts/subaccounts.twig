@@ -6,7 +6,7 @@
 {% block content %}
 	{% set previous_parent = '' %}
 	<div class="well">
-		<ul>
+		<ul class="list-unstyled">
 			{% for account in accounts %}
 				{% if account.parent_id != previous_parent %}
 					{% if loop.index != 1 %}
