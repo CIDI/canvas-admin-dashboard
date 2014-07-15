@@ -1,0 +1,51 @@
+{% extends "_templates/base.twig" %}
+
+{% block masthead %}
+{% endblock %}
+
+{% block content %}
+	{% set previous_parent = '' %}
+	<div class="well">
+		<ul>
+			{% for account in accounts %}
+				{% if account.parent_id != previous_parent %}
+					{% if loop.index != 1 %}
+							</ol>
+						</li>
+					{% endif %}
+					
+					<li id="account_{{ account.parent_id }}" class="{% if account.parent_include == 1 %}include{% else %}exclude{% endif %} college {% if not account.id %}ignore{% endif %}" rel="{{ account.parent_id }}">
+						<div class="btn-group control-accountState">
+							<button class="btn btn-default btn-xs" title="Add College &amp; Departments" value="include"><i class="fa fa-check"></i></button>
+							<button class="btn btn-default btn-xs" title="Remove College &amp; Departments" value="exclude"><i class="fa fa-times"></i></button>
+						</div>
+					
+						<a href="https://usu.instructure.com/accounts/{{ account.parent_id }}/sub_accounts" target="_blank" title="View subaccounts list in Canvas"><span class="collegeName">{{ account.parent_name }}</span></a>
+						
+						(ID: {{ account.parent_id }})
+						
+						<ol id="subaccounts_{{ account.parent_id }}" class="subaccounts {% if account.parent_include != 1 %}ignore{% endif %}">
+					{% set previous_parent = account.parent_id %}
+				{% endif %}
+				
+				<li class="{% if account.include == 1 %}include{% else %}exclude{% endif %} department" rel="{{ account.id }}">
+					<div class="btn-group control-accountState">
+						<button class="btn btn-default btn-xs addDept" title="Add Department" value="include"><i class="fa fa-check"></i></a>
+						<button class="btn btn-default btn-xs removeDept" title="Remove Department" value="exclude"><i class="fa fa-times"></i></a>
+					</div>
+					
+					<a href="https://usu.instructure.com/accounts/{{ account.id }}" target="_blank" title="View account in Canvas">
+						<span class="deptName">{{ account.name }}</span>
+					</a>
+					
+					(ID: {{ account.id }})
+					
+					<span class="parentCollegeID" style="display:none;">{{ account.parent_id }}</span>
+				</li>
+			{% endfor %}
+			
+				</ol>
+			</li>
+		</ul>
+	</div>	
+{% endblock %}
