@@ -36,6 +36,11 @@ class BaseReport {
 	}
 
 	public function process($report, $data, $course_id, $meta_category_id, $save=true) {
+		// if there is no data to process, we are done here
+		if(!$data || !count($data)) {
+			return;
+		}
+		
 		if ($report == 'all' || array_search($report, $this->reports)) {
 			
 			if($save) {
@@ -43,29 +48,50 @@ class BaseReport {
 		            'course_id'=> $course_id,
 		            'meta_category_id'=> $meta_category_id
 		        ));
-		        
+		    $dataType = gettype($data);
+		    if ($dataType == 'object') {
+		    	$dataArray = array($data);
+		    } else {
+		    	$dataArray = $data;
+		    }
 				$fields = $this->track();
-
 				if(!count($fields)) {
-					$fields = get_object_vars($data);
+					$fields = array_keys(get_object_vars($dataArray[0]));
 				}
 
-				foreach($fields as $field) {
-					$meta_value = '';
+		    foreach ($dataArray as $sort => $item) {
+					foreach($fields as $field) {
+						$meta_value = '';
 
-					if(isset($data->$field)) {
-						$meta_value = $data->$field;
-					}
+						if(isset($item->$field)) {
+							$meta_value = $item->$field;
+						}
+						$metaType = gettype($meta_value);
+
+						if($metaType == 'object') {
+							$meta_array = get_object_vars($meta_value);
+						} else {
+							$meta_array = array($meta_value);
+						}
+
+						foreach ($meta_array as $key => $value) {
+							$meta_name = $field;
+
+							if($metaType == 'object') {
+								$meta_name .= '__' . $key;
+							}
 
 			        $this->course_meta_model->insert(array(
 			            'course_id'=> $course_id,
 			            'meta_category_id'=> $meta_category_id,
-			            'meta_name'=> $field,
-			            'meta_value'=> $meta_value,
+			            'meta_name'=> $meta_name,
+			            'meta_value'=> $value,
 			            'synced_at'=> NOW,
-			            'sort'=> 1
+			            'sort'=> $sort
 			        ));
-				}
+						}
+					}
+		    }
 			}
 			
 			if($report == 'all') {
