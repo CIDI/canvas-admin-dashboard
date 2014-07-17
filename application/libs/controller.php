@@ -92,7 +92,7 @@ class Controller
         $twig->addExtension(new Twig_Extension_Debug());
         
         $data_array['_app'] = array(
-          'request' => array('view' => $view, 'controller' => strtolower(get_class($this))),
+          'request' => array('url' => $_GET['url'], 'view' => $view, 'controller' => strtolower(get_class($this)), 'data' => $data_array),
           'session' => array('user' => $this->authenticatedUser())
         );
 

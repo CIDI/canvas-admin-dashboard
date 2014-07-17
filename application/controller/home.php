@@ -8,7 +8,7 @@ class Home extends Controller
 		
 		$data = array(
 			'term'=>$model->findAll(array(
-				'term_code'=>'201420'
+				'term_id'=>'201420'
 			)),
 			'syllabus'=>$this->canvasApi->getCourseSyllabus(258347),
 			'model'=>$model

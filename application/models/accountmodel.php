@@ -1,6 +1,8 @@
 <?php
 
 class AccountModel extends BaseModel {
+	static $ORDER = "name, canvas_account_id";
+	
 	public function stats($filter=array()) {
 
 		// in your controller, call like this

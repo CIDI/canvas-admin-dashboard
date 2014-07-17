@@ -248,7 +248,7 @@ class BaseModel {
     public function pluralize($string) {
       if(in_array(strtolower($string), array('activity', 'meta_category'))) {
         $result = preg_replace('/y$/', 'ies', $string);
-      } elseif(in_array(strtolower($string), array('progress', 'course_meta'))) {
+      } elseif(in_array(strtolower($string), array('progress', 'course_meta', 'account_meta'))) {
         $result = $string;
       } else {
         $result = $string . 's';

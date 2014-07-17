@@ -31,6 +31,16 @@
     {% block topbar %}
       {% include '_templates/topbar.twig' %}
     {% endblock %}
+
+    {% if messages %}
+    	<div class="container" id="messages">
+	    	{% if messages.error %}
+	    		<div class="alert alert-danger">
+	    			{{ messages.error }}
+	    		</div>
+	    	{% endif %}
+	    </div>
+    {% endif %}
 	
     {% block masthead %}{% endblock %}
 	
@@ -55,6 +65,12 @@
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script src="{{ constant('STATIC_URL') }}public/js/application.js"></script>
     <script src="{{ constant('STATIC_URL') }}public/js/{{ _app.request.controller }}.js"></script>		
-		
+	{% block scripts %}{% endblock %}
+	{#
+	<div id="debug">
+		{{ constant('URL') }}
+		<pre>{{ dump(_app) }}</pre>
+	</div>
+	#}
   </body>
 </html>
