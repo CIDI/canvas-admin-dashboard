@@ -1,0 +1,23 @@
+{% extends "_templates/base.twig" %}
+
+{% block masthead %}
+<div class="container">
+	<form>
+		<input name="url" value="{{ _app.request.url }}" type="hidden">
+
+		<div class="form-group">
+			<label for="filters_term">
+				Term:
+			</label>
+			<select name="filters[term]" id="filters_term">
+				<option></option>
+			{% for term in terms %}
+				<option value="{{ term.canvas_term_id }}">{{ term.name }}</option>
+			{% endfor %}
+			</select>
+		</div>
+
+		<button type="submit">Retrieve Data</submit>
+	</form>
+</div>
+{% endblock %}

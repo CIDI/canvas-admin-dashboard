@@ -1,0 +1,46 @@
+{% extends "reports/_template.twig" %}
+
+{% block content %}
+
+{% set account = '' %}
+{% set parent_account = '' %}
+{% set course_id = '' %}
+{% for record in report_data %}
+	{% if account != record.canvas_account_id %}
+		{% if parent_account != record.canvas_parent_id %}
+			{% set parent_account = record.canvas_parent_id %}
+
+			{% if loop.index > 1 %}
+				</div>
+			{% endif %}
+
+			<h2>{{ record.parent_account_name }}</h2>
+			<div>
+		{% endif %}
+		{% set account = record.canvas_account_id %}
+
+		{% if loop.index > 1 %}
+			</ul>
+		{% endif %}
+
+		<h3>{{ record.account_name }}</h3>
+		<ul>
+	{% endif %}
+	
+	{# {% if course_id != record.canvas_course_id %} #}
+		{# {% if loop.index > 1 %} #}
+			{# </div> #}
+		{# {% endif %} #}
+
+		<li>
+			{% if record.course_status == 'unpublished' %}
+				<i class="glyphicon glyphicon-remove-sign"></i>&nbsp;
+			{% else %}
+				<i class="glyphicon glyphicon-ok-sign"></i>&nbsp;
+			{% endif %}
+			{{ record.course_long_name }}
+		</li>
+	{# {% endif %} #}
+{% endfor %}
+
+{% endblock %}

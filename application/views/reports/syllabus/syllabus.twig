@@ -1,0 +1,54 @@
+{% extends "reports/_template.twig" %}
+
+{% block content %}
+	<div class="courses">
+		{% set account = '' %}
+		{% set parent_account = '' %}
+		{% set course_id = '' %}
+		{% for record in report_data %}
+			{% set li_classes = '' %}
+			{% if account != record.canvas_account_id %}
+				{% if parent_account != record.canvas_parent_id %}
+					{% set parent_account = record.canvas_parent_id %}
+
+					{% if loop.index > 1 %}
+						</div>
+					{% endif %}
+
+					<h2>{{ record.parent_account_name }}</h2>
+					<div class="college">
+				{% endif %}
+				{% set account = record.canvas_account_id %}
+
+				{% if loop.index > 1 %}
+					</ul></div>
+				{% endif %}
+				<div class="department">
+				<h3>{{ record.account_name }}</h3>
+				<ul class="course-list">
+			{% endif %}
+			
+			{# {% if course_id != record.canvas_course_id %} #}
+				{# {% if loop.index > 1 %} #}
+					{# </div> #}
+				{# {% endif %} #}
+
+			<li>
+			{% if record.course_status == 'unpublished' %}
+					<i class="fa fa-times-circle not-using-canvas"></i>
+			{% else %}
+					<i class="fa fa-check-circle using-canvas"></i>
+			{% endif %}
+				<a href="{{ constant('CANVAS_API_URL') }}" target="_blank" data-toggle="tooltip" data-original-title="Open course in Canvas"> <i class="fa fa-share"></i><span class="screenreader-only">View course in Canvas</span></a>
+				&nbsp;{{ record.course_long_name }}
+			</li>
+					
+			{# {% endif %} #}
+		{% endfor %}
+	</div>
+
+{% endblock %}
+{% block scripts %}
+	<script src="{{ constant('STATIC_URL') }}public/js/syllabus.js"></script>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+{% endblock %}
