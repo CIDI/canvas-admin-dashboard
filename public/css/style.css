@@ -35,12 +35,12 @@ li.exclude ol {
 #count a {
   width: 200px;
 }
-#departmentCourses {
+.department {
   clear: both;
   margin-top: 5px;
   min-height: 100px;
 }
-#departmentCourses li {
+.department li {
   padding: 0 10px;
 }
 h1 {
@@ -57,7 +57,7 @@ h2 {
 .li i {
   margin-right: 5px;
 }
-#departmentCourses .icon-ok-sign, #generateProcess .completed, .include .icon-ok {
+.courses .fa-check-circle, #generateProcess .completed, .include .icon-ok {
   color: #468847;
 }
 .exclude .icon-ok, .include .icon-remove, .undecided i {
@@ -104,6 +104,16 @@ h2 {
 }
 #departmentCourses ol {
   list-style-type: none;
+}
+.screenreader-only {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
 }
 select, .btn {
   margin-bottom: 5px;
