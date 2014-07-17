@@ -19,6 +19,7 @@
  * Put your URL here, for local development "127.0.0.1" or "localhost" (plus sub-folder) is fine
  */
 define('URL', '/');
+define('STATIC_URL', '/canvasCustomTools/canvas-admin-dashboard/');
 
 /**
  * Configuration for: Views
@@ -45,3 +46,7 @@ define('DB_PASS', '');
  */
 define('CANVAS_API_URL', 'https://YOUR_INSTITUTION_HERE.instructure.com');
 define('CANVAS_API_TOKEN', '');
+define('PRIMARY_CANVAS_ACCOUNT_ID', '');
+
+// Customize timezone for database timestamps
+define('NOW', gmdate("Y-m-d H:i:s"));
