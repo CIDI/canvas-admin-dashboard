@@ -15,16 +15,16 @@ JOIN enrollment_counts as ec ON (
     AND ec.role = 'student'
     AND ec.enrollments > 0
     AND c.canvas_term_id = :term
-    AND c.institution_id = ec.institution_id
+    AND ec.institution_id = :institution
 )
 JOIN accounts as a ON (
     c.canvas_account_id = a.canvas_account_id
-    AND c.institution_id = a.institution_id
+    AND a.institution_id = :institution
 )
 JOIN account_meta as am ON (
     a.canvas_account_id = am.canvas_account_id 
     AND am.canvas_term_id = c.canvas_term_id
-    AND c.institution_id = am.institution_id
+    AND am.institution_id = :institution
 )
 JOIN accounts as p_a ON (
     a.canvas_parent_id = p_a.canvas_account_id
@@ -32,22 +32,22 @@ JOIN accounts as p_a ON (
 JOIN account_meta as p_am ON (
     a.canvas_parent_id = p_am.canvas_account_id 
     AND p_am.canvas_term_id = c.canvas_term_id
-    AND c.institution_id = p_am.institution_id
+    AND p_am.institution_id = :institution
 )
 JOIN enrollments as e ON (
     c.canvas_course_id = e.canvas_course_id
     AND e.role = 'teacher'
-    AND c.institution_id = e.institution_id
+    AND e.institution_id = :institution
 )
 JOIN users as u ON (
     e.canvas_user_id = u.canvas_user_id
-    AND c.institution_id = u.institution_id
+    AND u.institution_id = :institution
 )
 LEFT JOIN course_meta as cm ON (
     c.canvas_course_id = cm.course_id
     AND cm.meta_category_id = 1
     AND meta_name = 'syllabus_body'
-    AND c.institution_id = u.institution_id
+    AND cm.institution_id = :institution
 ) 
 WHERE c.institution_id = :institution
 ORDER BY p_am.lft, p_am.rght, p_a.name, am.lft, am.rght, a.name, a.canvas_account_id, c.long_name, c.canvas_course_id, u.last_name

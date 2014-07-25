@@ -92,7 +92,7 @@ class Canvas extends Controller
             $meta_category_model = $this->loadModel('Meta_categoryModel');
             $meta_category = $meta_category_model->findOne(array('category_name'=>$category));
 
-            $report->process($item, $response, $course['canvas_course_id'], $meta_category['id']);
+            $report->process($term, $item, $response, $course['canvas_course_id'], $meta_category['id']);
 
         
             // if ($i > 30) {

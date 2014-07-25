@@ -20,6 +20,9 @@ class BaseReport {
 	}
 
 	public function register($method_name=''){
+		if($method_name == 'all') {
+			throw new Exception("&ldquo;all&rdquo; is a reserved name. You cannot register this report.");
+		} 
 		if($method_name != '') {
 			$this->reports[] = $method_name;
 		}
@@ -35,7 +38,7 @@ class BaseReport {
 		return $this->interesting_data;
 	}
 
-	public function process($report, $data, $course_id, $meta_category_id, $save=true) {
+	public function process($term, $report, $data, $course_id, $meta_category_id, $save=true) {
 		// if there is no data to process, we are done here
 		if(!$data || !count($data)) {
 			return;
@@ -46,7 +49,9 @@ class BaseReport {
 			if($save) {
 				$this->course_meta_model->delete(array(
 		            'course_id'=> $course_id,
-		            'meta_category_id'=> $meta_category_id
+		            'meta_category_id'=> $meta_category_id,
+		            'institution_id'=> $_SESSION['canvas-admin-dashboard']['institution_id'],
+		            'canvas_term_id'=> $term
 		        ));
 		    $dataType = gettype($data);
 		    if ($dataType == 'object') {
@@ -90,7 +95,9 @@ class BaseReport {
 					            'meta_name'=> $meta_name,
 					            'meta_value'=> $value,
 					            'synced_at'=> NOW,
-					            'sort'=> $sort
+					            'sort'=> $sort,
+					            'institution_id'=> $_SESSION['canvas-admin-dashboard']['institution_id'],
+					            'canvas_term_id'=> $term
 					        ));
 						}
 					}
@@ -98,18 +105,18 @@ class BaseReport {
 			}
 			
 			if($report == 'all') {
-				$this->all($data, $course_id, $meta_category_id);
+				$this->all($term, $data, $course_id, $meta_category_id);
 			} else {
 				$this->$report($data);
 			}
 		}
 	}
 
-	public function all($data, $course_id, $meta_category_id){
+	public function all($term, $data, $course_id, $meta_category_id){
 		
 
 		foreach($this->reports as $report_name) {
-			$this->process($report_name, $data, $course_id, $meta_category_id, false);
+			$this->process($term, $report_name, $data, $course_id, $meta_category_id, false);
 		}
 	}
 }

@@ -16,6 +16,14 @@
 {% endblock %}
 
 {% block content %}
+	<ul class="nav nav-pills">
+		<li>
+			<a href="{{ constant('URL') }}admin/collect_data/{{ filters.term }}/syllabus">Synchronize Syllabus Data</a>
+		</li>
+		<li>
+			<a href="{{ constant('URL') }}admin/collect_data/{{ filters.term }}/lti">Synchronize LTI Data</a>
+		</li>
+	</ul>
 	<form action="{{ constant('URL') }}admin/upload" class="form-horizontal" enctype="multipart/form-data"
        method="post">
        {% if terms %}
