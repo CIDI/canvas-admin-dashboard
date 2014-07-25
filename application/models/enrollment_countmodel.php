@@ -37,9 +37,5 @@ class EnrollmentModel extends BaseModel {
 		foreach ($result as $role) {
 
 		}
-// CREATE VIEW enrollment_counts AS
-// SELECT `role`, `canvas_course_id`, count(*) as num FROM enrollments
-// GROUP BY canvas_course_id, role
-// ORDER BY canvas_course_id, role
 	}
 }

@@ -1,5 +1,5 @@
 SELECT 
-c.canvas_course_id, c.course_id, c.short_name as course_short_name, c.long_name as course_long_name, c.canvas_account_id, c.canvas_term_id, c.term_id, c.status as course_status, c.start_date as course_start_date, c.end_date as course_end_date, c.synced_at as course_synced_at,
+c.canvas_course_id, c.course_id, c.short_name as course_short_name, c.long_name as course_long_name, c.canvas_account_id, c.canvas_term_id, c.term_id, c.status as course_status, c.start_date as course_start_date, c.end_date as course_end_date, c.synced_at as course_synced_at, c.institution_id,
 ec.role as enrollment_type, ec.enrollments,
 a.account_id, a.canvas_parent_id, a.parent_account_id,
 a.name as account_name, a.status as account_status, a.synced_at as account_synced_at,
@@ -14,14 +14,17 @@ JOIN enrollment_counts as ec ON (
     c.canvas_course_id = ec.canvas_course_id
     AND ec.role = 'student'
     AND ec.enrollments > 0
-    AND c.canvas_term_id = :canvas_term_id
+    AND c.canvas_term_id = :term
+    AND c.institution_id = ec.institution_id
 )
 JOIN accounts as a ON (
     c.canvas_account_id = a.canvas_account_id
+    AND c.institution_id = a.institution_id
 )
 JOIN account_meta as am ON (
     a.canvas_account_id = am.canvas_account_id 
     AND am.canvas_term_id = c.canvas_term_id
+    AND c.institution_id = am.institution_id
 )
 JOIN accounts as p_a ON (
     a.canvas_parent_id = p_a.canvas_account_id
@@ -29,18 +32,22 @@ JOIN accounts as p_a ON (
 JOIN account_meta as p_am ON (
     a.canvas_parent_id = p_am.canvas_account_id 
     AND p_am.canvas_term_id = c.canvas_term_id
+    AND c.institution_id = p_am.institution_id
 )
 JOIN enrollments as e ON (
     c.canvas_course_id = e.canvas_course_id
     AND e.role = 'teacher'
+    AND c.institution_id = e.institution_id
 )
 JOIN users as u ON (
     e.canvas_user_id = u.canvas_user_id
+    AND c.institution_id = u.institution_id
 )
 LEFT JOIN course_meta as cm ON (
     c.canvas_course_id = cm.course_id
     AND cm.meta_category_id = 1
     AND meta_name = 'syllabus_body'
+    AND c.institution_id = u.institution_id
 ) 
-WHERE 1
+WHERE c.institution_id = :institution
 ORDER BY p_am.lft, p_am.rght, p_a.name, am.lft, am.rght, a.name, a.canvas_account_id, c.long_name, c.canvas_course_id, u.last_name

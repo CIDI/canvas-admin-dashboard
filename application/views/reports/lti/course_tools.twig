@@ -1,0 +1,49 @@
+{% extends "reports/_template.twig" %}
+
+{% block topbar %}
+    <div class="heading">
+        <div class="container">
+            <h1><i class="fa fa-cog"></i> LTI Tools</h1>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+{% set account = '' %}
+{% set parent_account = '' %}
+{% set course_id = '' %}
+{% for record in report_data %}
+	{% if account != record.canvas_account_id %}
+		{% if parent_account != record.canvas_parent_id %}
+			{% set parent_account = record.canvas_parent_id %}
+
+			{% if loop.index > 1 %}
+				</div>
+			{% endif %}
+
+			<h2>{{ record.parent_account_name }}</h2>
+			<div>
+		{% endif %}
+		{% set account = record.canvas_account_id %}
+
+		{% if loop.index > 1 %}
+			</ul>
+		{% endif %}
+
+		<h3>{{ record.account_name }}</h3>
+		<ul>
+	{% endif %}
+	
+	{# {% if course_id != record.canvas_course_id %} #}
+		{# {% if loop.index > 1 %} #}
+			{# </div> #}
+		{# {% endif %} #}
+
+		<li>
+			{{ record.course_long_name }} ({{ record.canvas_course_id }}) <img src="{{ record.cm_icon_meta_value }}"> {{ record.cm_name_meta_value }}
+		</li>
+	{# {% endif %} #}
+{% endfor %}
+
+{% endblock %}

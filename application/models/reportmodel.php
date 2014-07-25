@@ -1,7 +1,7 @@
 <?php
 
 class ReportModel extends BaseModel {
-	public function query($report_code, $term_id) {
+	public function query($report_code, $filters) {
 		$properties = array(
 			'code'=>$report_code
 		);
@@ -10,10 +10,6 @@ class ReportModel extends BaseModel {
 
 		// check if query is executable
 		if($report['executable']) {
-			$filters = array(
-				'canvas_term_id'=>$term_id
-			);
-
 			// execute query
 			$query = $this->connection->prepare($report['sql_query']);
 			$query->execute($filters);

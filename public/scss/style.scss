@@ -44,6 +44,10 @@ li.exclude {
 #count a {
 	width: 200px;
 }
+.enrollment-count {
+	min-width: 30px;
+	display: inline-block;
+}
 .department { 
 	clear: both; 
 	margin-top: 5px; 
@@ -106,14 +110,17 @@ h2 {
 	font-size: 14px;
 	margin-right: 5px;
 }
-.courses .icon-question-sign, .exclude .icon-remove{ 
+.courses .fa-question-circle, .exclude .icon-remove{ 
 	color: #b94a48; 
 }
-.notUsingCanvas, i.icon-circle-blank {
+.not-using-canvas, i.fa-times-circle {
 	color: #9E9E9E;
 }
-.courses ol { 
-	list-style-type: none; 
+.courses ul { 
+	list-style-type: none;
+	column-count: 3;
+	-moz-column-count: 3;
+	-webkit-column-count: 3;
 }
 .screenreader-only {
 	border: 0;

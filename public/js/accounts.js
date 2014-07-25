@@ -1,3 +1,5 @@
+
+
 $(function() {
 			// Sort the list of colleges alphabetically
 			$.fn.sortMainList = function() {

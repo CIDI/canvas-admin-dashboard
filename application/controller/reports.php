@@ -5,6 +5,9 @@ class Reports extends Controller {
   public function view($report_code, $view='index') {
 	$data = array('messages'=>array());
 	$filters = $_GET['filters'];
+	if (!isset($filters['institution'])) {
+		$filters['institution'] = $_SESSION['canvas-admin-dashboard']['institution_id'];
+	}
 
   	$report_model = $this->loadModel('ReportModel');
   	$term_model = $this->loadModel('TermModel');
@@ -14,7 +17,7 @@ class Reports extends Controller {
   	$data['terms'] = $terms;
 
 	try {
-		$report_data = $report_model->query($report_code, $filters['term']);
+		$report_data = $report_model->query($report_code, $filters);
 
 		$data['report_data'] = $report_data;
 	} catch(Exception $error) {
