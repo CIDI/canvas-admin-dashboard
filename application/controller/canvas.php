@@ -2,34 +2,37 @@
 
 class Canvas extends Controller
 {
-    public function accounts() {
+    public function process_accounts($canvas_term_id) {
         $file = 'accounts.csv';
         $model = 'account';
-        $this->import_csv($file, $model);
+        $this->import_csv($file, $model, $canvas_term_id);
+        $account_meta_model = $this->loadModel('Account_metaModel');
+        $account_meta_model->delete(array('canvas_term_id'=>$canvas_term_id));
+        $this->account_meta($canvas_term_id);
     }
 
-    public function courses() {
+    public function process_courses($canvas_term_id) {
         $file = 'courses.csv';
         $model = 'course';
-        $this->import_csv($file, $model);
+        $this->import_csv($file, $model, $canvas_term_id);
     }
 
-    public function enrollments() {
+    public function process_enrollments($canvas_term_id) {
         $file = 'enrollments.csv';
         $model = 'enrollment';
-        $this->import_csv($file, $model);
+        $this->import_csv($file, $model, $canvas_term_id);
     }
 
-    public function terms() {
-        $file = 'terms.csv';
-        $model = 'term';
-        $this->import_csv($file, $model);
-    }
 
-    public function users() {
+    public function process_users($canvas_term_id) {
         $file = 'users.csv';
         $model = 'user';
         set_time_limit(300);
+        $this->import_csv($file, $model, $canvas_term_id);
+    }
+    public function process_terms() {
+        $file = 'terms.csv';
+        $model = 'term';
         $this->import_csv($file, $model);
     }
 
@@ -67,17 +70,25 @@ class Canvas extends Controller
             $report->process($item, $response, $course['canvas_course_id'], $meta_category['id']);
 
         
-            if ($i > 30) {
-                break;
-            }
+            // if ($i > 30) {
+            //     break;
+            // }
         }
     }
 
-    private function import_csv($fname, $model_name) {
+    private function import_csv($fname, $model_name, $canvas_term_id='', $remove_file=true) {
         $model = $this->loadModel(ucfirst($model_name) . 'Model');
         $chunksize = 50;
 
-        $upload_folder = realpath(__DIR__ . '/../../public/uploads/');
+        $delete_filter = array('institution_id'=>$_SESSION['canvas-admin-dashboard']['institution_id']);
+
+        if($canvas_term_id) {
+            $delete_filter['canvas_term_id'] = $canvas_term_id;
+        }
+
+        $model->delete($delete_filter);
+
+        $upload_folder = PATH_UPLOADS;
         $csv_file = $upload_folder . '/' . $fname;
 
         if( ! $fh = fopen($csv_file, 'r') ) {
@@ -93,17 +104,21 @@ class Canvas extends Controller
             $buffer[] = fgets($fh);
             $i++;
             if( ($i % $chunksize) == 0 ) {
-                $this->commit_buffer($buffer, $field_map, $model);
+                $this->commit_buffer($buffer, $field_map, $model, $canvas_term_id);
                 $buffer = array(); //blank out the buffer.
             }
         }
 
         //clean out remaining buffer entries.
-        if( count($buffer) ) { $this->commit_buffer($buffer, $field_map, $model); }
+        if( count($buffer) ) { $this->commit_buffer($buffer, $field_map, $model, $canvas_term_id); }
+
+        if($remove_file) {
+            unlink($csv_file);
+        }
 
     }
 
-    private function commit_buffer($buffer, $field_map, $model) {
+    private function commit_buffer($buffer, $field_map, $model, $canvas_term_id) {
         foreach( $buffer as $line ) {
             $fields = str_getcsv($line);
             //create inserts
@@ -120,18 +135,23 @@ class Canvas extends Controller
             }
 
             if(count($data) > 0) {
+                $data['institution_id'] = $_SESSION['canvas-admin-dashboard']['institution_id'];
+
                 $data['synced_at'] = NOW;
+                if (!isset($data['canvas_term_id'])) {
+                    $data['canvas_term_id'] = $canvas_term_id;
+                }
+
+
                 try {
                     $model->insert($data);
                 } catch (PDOException $exception) {
                     $DUPLICATE_KEY_CODE = 1062;
 
-                    if($exception->errorInfo[1] == $DUPLICATE_KEY_CODE) {
-                        /*$model->delete(array($primary_key_column=>$primary_key));
-                        $model->insert($data);
-
-                        echo "delete insert complete - $primary_key<br>";*/
-                    } else {
+                    // duplicate keys have been identified for users and enrollments 
+                    // seems to be based off of users that have more than one login id
+                    // not relevant for the report, so skipping any duplicate records
+                    if($exception->errorInfo[1] != $DUPLICATE_KEY_CODE) {
                         throw $exception;
                     }
                 }
@@ -139,5 +159,54 @@ class Canvas extends Controller
         }
         //run inserts
         $buffer = array(); //blank out the buffer.
+    }
+    private function account_meta($term_id, $parent_id=PRIMARY_CANVAS_ACCOUNT_ID, $depth=1, $index=1, $max_depth=20) {
+        if($depth > $max_depth) {
+            throw new Exception("Maximum account meta depth exceeded, depth=".$depth);
+        }
+        // model for storing account records to the database
+        $account_model = $this->loadModel('AccountModel');
+        $account_meta_model = $this->loadModel('Account_metaModel');
+        
+        // get the account list from canvas
+        $account_filter = array(
+            'canvas_parent_id'=>$parent_id
+        );
+        $accounts = $account_model->findAll($account_filter);
+        
+        // keep track of how many results need to be processed in this batch
+        $resultCount = count($accounts);
+    
+        // only try processing if there are results to be processed
+        if($resultCount > 0) {
+            // loop through colleges
+            foreach ($accounts as $account) {
+                $left_index = $index;
+                
+                // move on to find children accounts
+                $right_index = $this->account_meta(
+                    $term_id,
+                    $account['canvas_account_id'],
+                    $depth+1,
+                    $left_index+1,
+                    $max_depth
+                );
+                $index=$right_index;
+                // collect all properties that would need to be inserted into the database
+                $properties = array(
+                    'canvas_account_id'=>$account['canvas_account_id'],
+                    'canvas_term_id'=>$term_id,
+                    'depth'=>$depth,
+                    'lft'=>$left_index,
+                    'rght'=>$right_index,
+                    'institution_id'=>$_SESSION['canvas-admin-dashboard']['institution_id']
+                );
+
+                $account_meta_model->insert($properties);
+                $index++;
+            }
+
+        }
+        return $index;
     }
 }

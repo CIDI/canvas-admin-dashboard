@@ -1,54 +1,54 @@
 <?php
 
 class BaseModel {
-	static  $SELECT = ""; 
-	static $JOIN = ""; 
-	static $ORDER ="";
-	static $GROUP = "";
-	
+  static  $SELECT = ""; 
+  static $JOIN = ""; 
+  static $ORDER ="";
+  static $GROUP = "";
+  
   public $id;
-	
-	function __construct($db, $name='BaseModel') {
-		try {
+  
+  function __construct($db, $name='BaseModel') {
+    try {
         $this->db = $db;
     } catch (PDOException $e) {
         exit('Database connection could not be established.');
     }
-		
-		$this->connection = $db;
-		
-		$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		
+    
+    $this->connection = $db;
+    
+    $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
     $this->name = $name == 'BaseModel' ? strtolower(get_class($this)) : $name;
     $this->table = strtolower($this->pluralize(preg_replace('/Model$/', '', $this->name)));
 
-		return $this;
-	} 
+    return $this;
+  } 
     
   public function find($properties=array(), $selectArg="", $joinArg="", $orderArg="", $groupArg="") {
-	
+  
     if ($selectArg == ""){
-    	$select=static::$SELECT;	
+      $select=static::$SELECT;  
     } else {
-    	$select = $selectArg;
+      $select = $selectArg;
     }
-    	
+      
     if ($joinArg == ""){
-    	$join=static::$JOIN;
+      $join=static::$JOIN;
     } else {
-    	$join = $joinArg;
+      $join = $joinArg;
     }
     
     if ($groupArg == ""){
-    	$group=static::$GROUP;
+      $group=static::$GROUP;
     } else {
-    	$group = $groupArg;
+      $group = $groupArg;
     }
     
     if ($orderArg == ""){
-    	$order=static::$ORDER;
+      $order=static::$ORDER;
     } else {
-    	$order = $orderArg;
+      $order = $orderArg;
     }
     
     $selectStatement = "*";
@@ -58,19 +58,19 @@ class BaseModel {
     $orderStatement = "";
     
     if ($select != "") {
-    	$selectStatement = $select; 
+      $selectStatement = $select; 
     }
      
     if ($join != "") {
-    	$joinStatement = $join; 
+      $joinStatement = $join; 
     }
     
     if ($group != "") {
-    	$groupStatement = 'GROUP BY ' . $group; 
+      $groupStatement = 'GROUP BY ' . $group; 
     }
     
     if ($order != "") {
-    	$orderStatement = "ORDER BY $order"; 
+      $orderStatement = "ORDER BY $order"; 
     }
 
     foreach($properties AS $field=>$value) {
@@ -93,20 +93,20 @@ class BaseModel {
         unset($properties[$field]);
       }
     }
-		
-		$whereFilter = preg_replace('/AND $/', '', $whereFilter);
-		
-		if($whereFilter != '') {
-			$whereFilter = 'WHERE ' . $whereFilter;
-		}
-		
+    
+    $whereFilter = preg_replace('/AND $/', '', $whereFilter);
+    
+    if($whereFilter != '') {
+      $whereFilter = 'WHERE ' . $whereFilter;
+    }
+    
     $querystring = "SELECT $selectStatement
                     FROM $this->table
                     $joinStatement
                     $whereFilter
                     $groupStatement
                     $orderStatement";
-		
+    
     $query = $this->connection->prepare($querystring);
     $query->execute($properties);
 
@@ -125,9 +125,9 @@ class BaseModel {
               $data[$field] = $value;
           }
       }
-			
-			$columns = preg_replace('/, $/', '', $columns);
-			$values = preg_replace('/, $/', '', $values);
+      
+      $columns = preg_replace('/, $/', '', $columns);
+      $values = preg_replace('/, $/', '', $values);
       
       $querystring = "INSERT INTO $this->table ($columns)
                       VALUES ($values)";
@@ -137,15 +137,15 @@ class BaseModel {
 
       return $query;
   }
-	
-	public function update($properties=array(), $filter=array()) {
-		$setStatement = '';
-		$data = array();
-		
-		if (!is_array($properties) || count($properties) == 0) {
-			return false;
-		}
-		
+  
+  public function update($properties=array(), $filter=array()) {
+    $setStatement = '';
+    $data = array();
+    
+    if (!is_array($properties) || count($properties) == 0) {
+      return false;
+    }
+    
     foreach($properties AS $field=>$value) {
       if ($field !== 'id') {
         $setStatement .= "$field = ";
@@ -163,47 +163,47 @@ class BaseModel {
 
     $setStatement = preg_replace('/, $/', '', $setStatement);
     
-		$whereFilter = "";
-  		
-		if (!is_array($filter) || count($filter) === 0) {
-			$whereFilter = "$this->table.id = :id";
-		} else {
-		
-			foreach($filter AS $field=>$value) {
-				if(!strstr($field, '__')) {
-						$whereFilter .= "$this->table.$field = :$field AND";
-				} else {
-						$column = str_replace('__', '.', $field);
-						$whereFilter .= "$column = :$field AND";
-				}
-				
-				if($value !== '') {
-					$data[$field] = $value;
-				}
-			}
-	
-			$whereFilter = preg_replace('/ AND$/', '', $whereFilter);
-		}
-		
-		$querystring = "UPDATE $this->table
-				SET
-				$setStatement
-				WHERE $whereFilter";
+    $whereFilter = "";
+      
+    if (!is_array($filter) || count($filter) === 0) {
+      $whereFilter = "$this->table.id = :id";
+    } else {
+    
+      foreach($filter AS $field=>$value) {
+        if(!strstr($field, '__')) {
+            $whereFilter .= "$this->table.$field = :$field AND";
+        } else {
+            $column = str_replace('__', '.', $field);
+            $whereFilter .= "$column = :$field AND";
+        }
+        
+        if($value !== '') {
+          $data[$field] = $value;
+        }
+      }
+  
+      $whereFilter = preg_replace('/ AND$/', '', $whereFilter);
+    }
+    
+    $querystring = "UPDATE $this->table
+        SET
+        $setStatement
+        WHERE $whereFilter";
 
-		$query = $this->connection->prepare($querystring);
-		$result = $query->execute($data);
-		
-		return $query;
+    $query = $this->connection->prepare($querystring);
+    $result = $query->execute($data);
+    
+    return $query;
   }
     
   public function delete($properties=array(), $softDelete=false) {
-  		$whereFilter = "";
-  		
-  		if (!is_array($properties) || count($properties) == 0) {
-  			return false;
-  		}
-  		
-  		foreach($properties AS $field=>$value) {
+      $whereFilter = "";
+      
+      if (!is_array($properties) || count($properties) == 0) {
+        return false;
+      }
+      
+      foreach($properties AS $field=>$value) {
             if(!strstr($field, '__')) {
                 $whereFilter .= "$this->table.$field = :$field AND ";
             } else {
@@ -212,26 +212,26 @@ class BaseModel {
             }
         }
 
-		$whereFilter = preg_replace('/ AND $/', '', $whereFilter);
-		
-		if ($softDelete == true) {
-			$querystring = "UPDATE $this->table
-							SET deleted_at = '" . date('Y-m-d H:i:s') . "'
-							WHERE $whereFilter";
-		} else {
-			$querystring = "DELETE FROM $this->table
-							WHERE $whereFilter";
-		}
-		
-		$query = $this->connection->prepare($querystring);
-        $result = $query->execute($properties);
-		
-		return $query;                            
+    $whereFilter = preg_replace('/ AND $/', '', $whereFilter);
+    
+    if ($softDelete == true) {
+      $querystring = "UPDATE $this->table
+              SET deleted_at = '" . date('Y-m-d H:i:s') . "'
+              WHERE $whereFilter";
+    } else {
+      $querystring = "DELETE FROM $this->table
+              WHERE $whereFilter";
+    }
+
+    $query = $this->connection->prepare($querystring);
+    $result = $query->execute($properties);
+    
+    return $query;                            
   }
-	
-	public function deleteByKey($id, $softDelete=true) {
-		return $this->delete(array('id'=>$id), $softDelete);
-	}
+  
+  public function deleteByKey($id, $softDelete=true) {
+    return $this->delete(array('id'=>$id), $softDelete);
+  }
     
     public function findAll($properties=array(), $select="", $join="", $order="", $group="") {
         return $this->find($properties, $select, $join, $order, $group)->fetchAll();

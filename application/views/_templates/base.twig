@@ -7,8 +7,8 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="shortcut icon" href="{{ constant('STATIC_URL') }}public/ico/favicon.ico">
-		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css">
-		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css">
+	<link rel="stylesheet" href="///maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 
     <title>
 			{% block page_title %}
@@ -27,6 +27,7 @@
   </head>
 
   <body data-base-url="{{ constant('URL') }}">
+	
 
     {% block topbar %}
       {% include '_templates/topbar.twig' %}
@@ -48,21 +49,23 @@
 	    {% block content %}{% endblock %}
     </div>	
 	
-    <hr>
-
-    <footer>
-      <a href="#" class="generateData btn pull-right">Save List</a>
-			<a href="index.php" class="btn btn-primary trackerLink pull-right">Go to Syllabus Tracker</a>
-			<a href="http://cidi.usu.edu/" target="_blank" title="CIDI Website">
-				<img src="https://elearn.usu.edu/canvas_branding/cidi/images/cidi-logo-small-silver.png" width="250">
-			</a>
-    </footer>
-
+	<div class="container" role="main">
+		<div class="pull-right">
+			Institution: {{ _app.session.institution_id }}
+		</div>
+	    <footer>
+	    {# <a href="#" class="generateData btn pull-right">Save List</a> #}
+		{# <a href="index.php" class="btn btn-primary trackerLink pull-right">Go to Syllabus Tracker</a> #}
+				<a href="http://cidi.usu.edu/" target="_blank" title="CIDI Website">
+					<img src="https://elearn.usu.edu/canvas_branding/cidi/images/cidi-logo-small-silver.png" width="250">
+				</a>
+	    </footer>
+	</div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script src="{{ constant('STATIC_URL') }}public/js/application.js"></script>
     <script src="{{ constant('STATIC_URL') }}public/js/{{ _app.request.controller }}.js"></script>		
 	{% block scripts %}{% endblock %}

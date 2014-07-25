@@ -3,17 +3,11 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 15, 2014 at 12:11 PM
+-- Generation Time: Jul 23, 2014 at 03:55 PM
 -- Server version: 5.1.73
 -- PHP Version: 5.3.3-7+squeeze20
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
 
 --
 -- Database: ``
@@ -33,23 +27,33 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `name` varchar(32) NOT NULL,
   `status` varchar(32) NOT NULL,
   `synced_at` datetime NOT NULL,
-  PRIMARY KEY (`canvas_account_id`),
-  KEY `canvas_parent_id` (`canvas_parent_id`)
+  `canvas_term_id` int(11) NOT NULL,
+  `institution_id` int(11) NOT NULL,
+  PRIMARY KEY (`canvas_account_id`,`canvas_term_id`,`institution_id`),
+  KEY `canvas_parent_id` (`canvas_parent_id`),
+  KEY `canvas_term_id` (`canvas_term_id`),
+  KEY `institution_id` (`institution_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `available_reports`
+-- Table structure for table `account_meta`
 --
 
-CREATE TABLE IF NOT EXISTS `available_reports` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `report_id` int(11) NOT NULL,
-  `term_id` int(11) NOT NULL,
-  `created_at` date NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+CREATE TABLE IF NOT EXISTS `account_meta` (
+  `canvas_account_id` int(11) NOT NULL,
+  `canvas_term_id` int(11) NOT NULL,
+  `depth` int(11) NOT NULL,
+  `rght` int(11) DEFAULT NULL,
+  `lft` int(11) DEFAULT NULL,
+  `institution_id` int(11) NOT NULL,
+  PRIMARY KEY (`canvas_account_id`,`canvas_term_id`,`institution_id`),
+  KEY `depth` (`depth`),
+  KEY `right` (`rght`),
+  KEY `left` (`lft`),
+  KEY `institution_id` (`institution_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -70,25 +74,13 @@ CREATE TABLE IF NOT EXISTS `courses` (
   `start_date` datetime DEFAULT NULL,
   `end_date` datetime DEFAULT NULL,
   `synced_at` datetime NOT NULL,
-  PRIMARY KEY (`canvas_course_id`),
+  `institution_id` int(11) NOT NULL,
+  PRIMARY KEY (`canvas_course_id`,`canvas_term_id`,`institution_id`),
   KEY `canvas_account_id` (`canvas_account_id`),
   KEY `canvas_term_id` (`canvas_term_id`),
-  KEY `status` (`status`)
+  KEY `status` (`status`),
+  KEY `institution_id` (`institution_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `course_codes`
---
-
-CREATE TABLE IF NOT EXISTS `course_codes` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `course_id` int(11) NOT NULL,
-  `code_name` varchar(500) CHARACTER SET utf8 NOT NULL,
-  `code_value` varchar(100) CHARACTER SET utf8 NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -104,9 +96,13 @@ CREATE TABLE IF NOT EXISTS `course_meta` (
   `meta_value` text,
   `synced_at` datetime NOT NULL,
   `sort` int(11) NOT NULL,
+  `canvas_term_id` int(11) NOT NULL,
+  `institution_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `course_id` (`course_id`,`meta_category_id`,`meta_name`,`sort`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2868 ;
+  UNIQUE KEY `course_id` (`course_id`,`meta_category_id`,`meta_name`,`sort`),
+  KEY `institution_id` (`institution_id`),
+  KEY `canvas_term_id` (`canvas_term_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=38853 ;
 
 -- --------------------------------------------------------
 
@@ -126,7 +122,9 @@ CREATE TABLE IF NOT EXISTS `enrollments` (
   `canvas_associated_user_id` varchar(32) DEFAULT NULL,
   `associated_user_id` varchar(32) DEFAULT NULL,
   `synced_at` datetime NOT NULL,
-  PRIMARY KEY (`canvas_course_id`,`canvas_user_id`,`role`),
+  `canvas_term_id` int(11) NOT NULL,
+  `institution_id` int(11) NOT NULL,
+  PRIMARY KEY (`canvas_course_id`,`canvas_user_id`,`role`,`canvas_term_id`,`institution_id`),
   KEY `status` (`status`),
   KEY `canvas_user_id` (`canvas_user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -161,9 +159,14 @@ CREATE TABLE IF NOT EXISTS `meta_categories` (
 
 CREATE TABLE IF NOT EXISTS `reports` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `report_name` varchar(200) CHARACTER SET utf8 NOT NULL,
+  `name` varchar(200) CHARACTER SET utf8 NOT NULL,
+  `description` text NOT NULL,
+  `sql_query` text,
+  `executable` tinyint(1) DEFAULT NULL,
+  `code` varchar(32) NOT NULL,
+  `institution_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
 
 -- --------------------------------------------------------
 
@@ -179,6 +182,7 @@ CREATE TABLE IF NOT EXISTS `terms` (
   `start_date` datetime DEFAULT NULL,
   `end_date` datetime DEFAULT NULL,
   `synced_at` datetime NOT NULL,
+  `institution_id` int(11) NOT NULL,
   PRIMARY KEY (`canvas_term_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -197,7 +201,9 @@ CREATE TABLE IF NOT EXISTS `users` (
   `email` varchar(32) DEFAULT NULL,
   `status` varchar(32) NOT NULL,
   `synced_at` datetime NOT NULL,
-  PRIMARY KEY (`canvas_user_id`),
+  `canvas_term_id` int(11) NOT NULL,
+  `institution_id` int(11) NOT NULL,
+  PRIMARY KEY (`canvas_user_id`,`canvas_term_id`,`institution_id`),
   KEY `login_id` (`login_id`),
   KEY `status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

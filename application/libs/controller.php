@@ -93,7 +93,7 @@ class Controller
         
         $data_array['_app'] = array(
           'request' => array('url' => $_GET['url'], 'view' => $view, 'controller' => strtolower(get_class($this)), 'data' => $data_array),
-          'session' => array('user' => $this->authenticatedUser())
+          'session' => $_SESSION['canvas-admin-dashboard']
         );
 
         // render a view while passing the to-be-rendered data

@@ -80,15 +80,18 @@ class BaseReport {
 							if($metaType == 'object') {
 								$meta_name .= '__' . $key;
 							}
-
-			        $this->course_meta_model->insert(array(
-			            'course_id'=> $course_id,
-			            'meta_category_id'=> $meta_category_id,
-			            'meta_name'=> $meta_name,
-			            'meta_value'=> $value,
-			            'synced_at'=> NOW,
-			            'sort'=> $sort
-			        ));
+							$value_meta_type = gettype($value);
+							if($value_meta_type == 'object') {
+								$value = json_encode($value);
+							}
+					        $this->course_meta_model->insert(array(
+					            'course_id'=> $course_id,
+					            'meta_category_id'=> $meta_category_id,
+					            'meta_name'=> $meta_name,
+					            'meta_value'=> $value,
+					            'synced_at'=> NOW,
+					            'sort'=> $sort
+					        ));
 						}
 					}
 		    }

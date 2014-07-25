@@ -31,6 +31,13 @@ define('PATH_VIEWS', 'application/views/');
 define('PATH_VIEW_FILE_TYPE', '.twig');
 
 /**
+ * Configuration for: uploads
+ *
+ * PATH_UPLOADS is the path that the report CSV files will be uploaded to for processing
+ */
+define('PATH_UPLOADS', realpath(dirname(__DIR__) . '/models/import_data/'));
+
+/**
  * Configuration for: Database
  * This is the place where you define your database credentials, database type etc.
  */
