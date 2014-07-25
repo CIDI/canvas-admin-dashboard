@@ -1,0 +1,39 @@
+{% extends "_templates/base.twig" %}
+
+{% block page_title %}
+	Upload CSV
+{% endblock %}
+
+{% block topbar %}
+    <div class="heading">
+        <div class="container">
+            <h1><i class="fa fa-cogs"></i> Upload CSV for _____ term</h1>
+        </div>
+    </div>
+{% endblock %}
+
+{% block masthead %}
+{% endblock %}
+
+{% block content %}
+	<form action="{{ constant('URL') }}admin/upload" class="form-horizontal" enctype="multipart/form-data"
+       method="post">
+       {% if terms %}
+       	<a class="pull-right" href="{{ constant('URL') }}admin/terms">Update Institution Terms</a>
+       	{% include '_templates/term_select.php' %}
+       {% endif %}
+
+		{% for report,exists in reports %}
+			<div class="form-group">
+				{% if exists %}
+					<a href="{{ constant('URL') }}admin/process_{{ report }}">Process {{ report|capitalize }}</a>
+				{% else %}
+					<label for="{{ report }}">{{ report|capitalize }}: </label>
+					<input type="file" name="{{ report }}" id="{{ report }}">
+				{% endif %}
+			</div>
+		{% endfor %}
+		<button type="submit" class="btn btn-default">Import</button>
+	</form>
+
+{% endblock %}

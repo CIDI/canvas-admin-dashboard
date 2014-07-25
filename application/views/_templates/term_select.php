@@ -4,6 +4,6 @@
 <select name="filters[term]" id="filters_term" class="form-control">
 	<option></option>
 {% for term in terms %}
-	<option value="{{ term.canvas_term_id }}">{{ term.name }}</option>
+	<option value="{{ term.canvas_term_id }}" {% if filters.term == term.canvas_term_id %}selected{% endif %}>{{ term.name }}</option>
 {% endfor %}
 </select>

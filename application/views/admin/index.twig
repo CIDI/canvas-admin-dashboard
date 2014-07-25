@@ -16,24 +16,24 @@
 {% endblock %}
 
 {% block content %}
-	<form action="{{ constant('URL') }}admin/upload" class="form-horizontal" enctype="multipart/form-data"
+	<ul class="nav nav-pills">
+		<li>
+			<a href="{{ constant('URL') }}admin/users">Update Institution Users</a>
+		</li>
+		<li>
+	    	<a href="{{ constant('URL') }}admin/terms">Update Institution Terms</a>
+		</li>
+	</ul>
+
+	<form action="{{ constant('URL') }}admin/import" class="form-horizontal" enctype="multipart/form-data"
        method="post">
+       <h2>Import term data</h2>
        {% if terms %}
-       	<a class="pull-right" href="{{ constant('URL') }}admin/terms">Update Institution Terms</a>
        	{% include '_templates/term_select.php' %}
        {% endif %}
-
-		{% for report,exists in reports %}
-			<div class="form-group">
-				{% if exists %}
-					<a href="{{ constant('URL') }}admin/process_{{ report }}">Process {{ report|capitalize }}</a>
-				{% else %}
-					<label for="{{ report }}">{{ report|capitalize }}: </label>
-					<input type="file" name="{{ report }}" id="{{ report }}">
-				{% endif %}
-			</div>
-		{% endfor %}
-		<button type="submit" class="btn btn-default">Submit</button>
+		
+		<button type="submit" class="btn btn-default">Next</button>
 	</form>
+
 
 {% endblock %}

@@ -3,37 +3,62 @@
 class Canvas extends Controller
 {
     public function process_accounts($canvas_term_id) {
-        $file = 'accounts.csv';
+        $file = $this->report_prefix($canvas_term_id) . 'accounts.csv';
         $model = 'account';
         $this->import_csv($file, $model, $canvas_term_id);
+
+        $institution_model = $this->loadModel('InstitutionModel');
+        $institution = $institution_model->findByKey($_SESSION['canvas-admin-dashboard']['institution_id']);
+
         $account_meta_model = $this->loadModel('Account_metaModel');
-        $account_meta_model->delete(array('canvas_term_id'=>$canvas_term_id));
-        $this->account_meta($canvas_term_id);
+
+        $account_meta_model->delete(array(
+            'canvas_term_id'=>$canvas_term_id,
+            'institution_id'=>$institution['id']
+        ));
+
+        $this->account_meta($canvas_term_id, $institution['primary_canvas_account_id']);
+    }
+
+    public function process_xlist($canvas_term_id) {
+        $file = $this->report_prefix($canvas_term_id) . 'xlist.csv';
+        $model = 'xlist';
+        $this->import_csv($file, $model, $canvas_term_id);
     }
 
     public function process_courses($canvas_term_id) {
-        $file = 'courses.csv';
+        $file = $this->report_prefix($canvas_term_id) . 'courses.csv';
         $model = 'course';
         $this->import_csv($file, $model, $canvas_term_id);
     }
 
     public function process_enrollments($canvas_term_id) {
-        $file = 'enrollments.csv';
+        $file = $this->report_prefix($canvas_term_id) . 'enrollments.csv';
         $model = 'enrollment';
         $this->import_csv($file, $model, $canvas_term_id);
     }
 
 
     public function process_users($canvas_term_id) {
-        $file = 'users.csv';
+        $file = $this->report_prefix($canvas_term_id) . 'users.csv';
         $model = 'user';
         set_time_limit(300);
         $this->import_csv($file, $model, $canvas_term_id);
     }
     public function process_terms() {
-        $file = 'terms.csv';
+        $file = $this->report_prefix() . 'terms.csv';
         $model = 'term';
         $this->import_csv($file, $model);
+    }
+
+    protected function report_prefix($canvas_term_id='') {
+        $file_name_prefix = $_SESSION['canvas-admin-dashboard']['institution_id'] . '_';
+
+        if($canvas_term_id!='') {
+          $file_name_prefix .= $canvas_term_id . '_';
+        }
+
+        return $file_name_prefix;
     }
 
     public function dashboard() {
@@ -160,7 +185,7 @@ class Canvas extends Controller
         //run inserts
         $buffer = array(); //blank out the buffer.
     }
-    private function account_meta($term_id, $parent_id=PRIMARY_CANVAS_ACCOUNT_ID, $depth=1, $index=1, $max_depth=20) {
+    private function account_meta($term_id, $parent_id, $depth=1, $index=1, $max_depth=20) {
         if($depth > $max_depth) {
             throw new Exception("Maximum account meta depth exceeded, depth=".$depth);
         }
@@ -170,7 +195,8 @@ class Canvas extends Controller
         
         // get the account list from canvas
         $account_filter = array(
-            'canvas_parent_id'=>$parent_id
+            'canvas_parent_id'=>$parent_id,
+            'institution_id'=>$_SESSION['canvas-admin-dashboard']['institution_id']
         );
         $accounts = $account_model->findAll($account_filter);
         
