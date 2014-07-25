@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 25, 2014 at 12:33 PM
+-- Generation Time: Jul 25, 2014 at 02:40 PM
 -- Server version: 5.1.73
 -- PHP Version: 5.3.3-7+squeeze20
 
@@ -105,10 +105,10 @@ CREATE TABLE IF NOT EXISTS `course_meta` (
   `canvas_term_id` int(11) NOT NULL,
   `institution_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `course_id` (`course_id`,`meta_category_id`,`meta_name`,`sort`),
+  UNIQUE KEY `course_id` (`course_id`,`meta_category_id`,`meta_name`,`sort`,`canvas_term_id`,`institution_id`),
   KEY `institution_id` (`institution_id`),
   KEY `canvas_term_id` (`canvas_term_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=38853 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=41186 ;
 
 -- --------------------------------------------------------
 
@@ -157,6 +157,7 @@ CREATE TABLE IF NOT EXISTS `institutions` (
   `api_domain` varchar(128) NOT NULL,
   `name` varchar(128) NOT NULL,
   `primary_canvas_account_id` int(11) NOT NULL,
+  `oauth_token` varchar(300) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
 

@@ -47,12 +47,5 @@ define('DB_NAME', 'db_name');
 define('DB_USER', 'db_user');
 define('DB_PASS', '');
 
-/**
- * Configuration for: LMS API (canvas)
- * Set up the base URL for talking to the API
- */
-define('CANVAS_API_URL', 'https://YOUR_INSTITUTION_HERE.instructure.com');
-define('CANVAS_API_TOKEN', '');
-
 // Customize timezone for database timestamps
 define('NOW', gmdate("Y-m-d H:i:s"));

@@ -16,10 +16,10 @@ class Controller
      */
     function __construct()
     {
+        session_start();
         $this->openDatabaseConnection();
         $this->initializeCanvasApi();
 				
-        session_start();
     }
 
     /**
@@ -38,8 +38,15 @@ class Controller
         $this->db = new PDO(DB_TYPE . ':host=' . DB_HOST . ';dbname=' . DB_NAME, DB_USER, DB_PASS, $options);
     }
 		
-		private function initializeCanvasApi($url=CANVAS_API_URL, $token=CANVAS_API_TOKEN) {
-			$this->canvasApi = new CanvasApi($url, $token);
+		private function initializeCanvasApi() {
+			if (isset($_SESSION['canvas-admin-dashboard']['institution_id'])) {
+				$instution_model = $this->loadModel('InstitutionModel');
+				$instutition = $instution_model->findByKey($_SESSION['canvas-admin-dashboard']['institution_id']);
+				$url = 'https://' . $instutition['api_domain'];
+				$this->canvasApi = new CanvasApi($url, $instutition['oauth_token']);
+			} else {
+				echo 'did not work' . $_SESSION['canvas-admin-dashboard']['institution_id'];
+			}
 		}
 
     /**
