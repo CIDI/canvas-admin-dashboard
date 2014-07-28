@@ -33,6 +33,9 @@
       {% include '_templates/topbar.twig' %}
     {% endblock %}
 
+    {% block links %}
+    {% endblock %}
+
     {% if messages %}
     	<div class="container" id="messages">
 	    	{% if messages.error %}
@@ -51,7 +54,7 @@
 	
 	<div class="container" role="main">
 		<div class="pull-right">
-			Institution: {{ _app.session.institution_id }}
+			Institution: {{ _app.session.institution.id }}
 		</div>
 	    <footer>
 	    {# <a href="#" class="generateData btn pull-right">Save List</a> #}

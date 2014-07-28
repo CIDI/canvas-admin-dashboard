@@ -2,13 +2,64 @@
 
 class Canvas extends Controller
 {
+    function __construct()
+    {
+        parent::__construct();
+        
+        $this->require_authentication();
+    }
+
+    private function require_authentication() {
+        if(isset($_SESSION['canvas-admin-dashboard']['user']) && stripos($_SESSION['canvas-admin-dashboard']['user']['roles'], 'Administrator')) {
+            if(!$this->institution['oauth_token'] &&  strpos($_GET['url'], 'admin/institution') !== 0) {
+                header('Location: ' . URL . 'admin/institution');
+                exit;
+            }
+        } else {
+            //Check to see if the lti handshake passes
+            require_once './application/libs/ims-blti/blti.php';
+
+            $context = new BLTI(LTI_SHARED_SECRET, false, false);
+            if ($context->valid && stripos($context->info['roles'], 'Administrator')) {
+                $_SESSION['canvas-admin-dashboard']['user'] = array(
+                    'display_name'=>$context->info['lis_person_name_full'],
+                    'login_id'=>$context->info['custom_canvas_user_login_id'],
+                    'roles'=>$context->info['roles']
+                );
+
+                $institution_model = $this->loadModel('InstitutionModel');
+
+                $institution = $institution_model->findOne( array(
+                    'api_domain'=>$context->info['custom_canvas_api_domain']
+                ));
+
+                if (!$institution) {
+                    $institution_model->insert( array(
+                        'api_domain'=>$context->info['custom_canvas_api_domain'],
+                        'name'=>$context->info['tool_consumer_instance_name'],
+                        'slug'=>preg_replace('/\.instructure.com$/', '', $context->info['custom_canvas_api_domain'])
+                    ));
+
+                    $institution = $institution_model->findByKey($this->db->lastInsertId());
+
+                    header('Location: ' . URL . 'admin/institution');
+                }
+
+                $_SESSION['canvas-admin-dashboard']['institution']['id'] = $institution['id'];
+            } else {
+                // if not, show message
+                $this->render('admin/unauthorized');exit;
+            }
+        }
+    }
+
     public function process_accounts($canvas_term_id) {
         $file = $this->report_prefix($canvas_term_id) . 'accounts.csv';
         $model = 'account';
         $this->import_csv($file, $model, $canvas_term_id);
 
         $institution_model = $this->loadModel('InstitutionModel');
-        $institution = $institution_model->findByKey($_SESSION['canvas-admin-dashboard']['institution_id']);
+        $institution = $institution_model->findByKey($this->institution['id']);
 
         $account_meta_model = $this->loadModel('Account_metaModel');
 
@@ -52,7 +103,7 @@ class Canvas extends Controller
     }
 
     protected function report_prefix($canvas_term_id='') {
-        $file_name_prefix = $_SESSION['canvas-admin-dashboard']['institution_id'] . '_';
+        $file_name_prefix = $this->institution['id'] . '_';
 
         if($canvas_term_id!='') {
           $file_name_prefix .= $canvas_term_id . '_';
@@ -105,7 +156,7 @@ class Canvas extends Controller
         $model = $this->loadModel(ucfirst($model_name) . 'Model');
         $chunksize = 50;
 
-        $delete_filter = array('institution_id'=>$_SESSION['canvas-admin-dashboard']['institution_id']);
+        $delete_filter = array('institution_id'=>$this->institution['id']);
 
         if($canvas_term_id) {
             $delete_filter['canvas_term_id'] = $canvas_term_id;
@@ -160,7 +211,7 @@ class Canvas extends Controller
             }
 
             if(count($data) > 0) {
-                $data['institution_id'] = $_SESSION['canvas-admin-dashboard']['institution_id'];
+                $data['institution_id'] = $this->institution['id'];
 
                 $data['synced_at'] = NOW;
                 if (!isset($data['canvas_term_id'])) {
@@ -196,7 +247,7 @@ class Canvas extends Controller
         // get the account list from canvas
         $account_filter = array(
             'canvas_parent_id'=>$parent_id,
-            'institution_id'=>$_SESSION['canvas-admin-dashboard']['institution_id']
+            'institution_id'=>$this->institution['id']
         );
         $accounts = $account_model->findAll($account_filter);
         
@@ -225,7 +276,7 @@ class Canvas extends Controller
                     'depth'=>$depth,
                     'lft'=>$left_index,
                     'rght'=>$right_index,
-                    'institution_id'=>$_SESSION['canvas-admin-dashboard']['institution_id']
+                    'institution_id'=>$this->institution['id']
                 );
 
                 $account_meta_model->insert($properties);

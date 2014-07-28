@@ -39,13 +39,15 @@ class Controller
     }
 		
 		private function initializeCanvasApi() {
-			if (isset($_SESSION['canvas-admin-dashboard']['institution_id'])) {
+			if (isset($_SESSION['canvas-admin-dashboard']['institution']['id'])) {
 				$instution_model = $this->loadModel('InstitutionModel');
-				$instutition = $instution_model->findByKey($_SESSION['canvas-admin-dashboard']['institution_id']);
-				$url = 'https://' . $instutition['api_domain'];
-				$this->canvasApi = new CanvasApi($url, $instutition['oauth_token']);
+				$this->institution = $instution_model->findByKey($_SESSION['canvas-admin-dashboard']['institution']['id']);
+				$url = 'https://' . $this->institution['api_domain'];
+				require_once 'canvas/canvas-api.php';
+				$this->canvasApi = new CanvasApi($url, $this->institution['oauth_token']);
 			} else {
-				echo 'did not work' . $_SESSION['canvas-admin-dashboard']['institution_id'];
+				$_SESSION['canvas-admin-dashboard']['institution']['id'] = 4;
+				echo 'did not work' . $_SESSION['canvas-admin-dashboard']['institution']['id'];exit;
 			}
 		}
 

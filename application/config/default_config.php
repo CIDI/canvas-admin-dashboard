@@ -47,5 +47,7 @@ define('DB_NAME', 'db_name');
 define('DB_USER', 'db_user');
 define('DB_PASS', '');
 
+define('LTI_SHARED_SECRET', 'secretpasscode');
+
 // Customize timezone for database timestamps
 define('NOW', gmdate("Y-m-d H:i:s"));

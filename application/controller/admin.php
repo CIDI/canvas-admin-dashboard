@@ -4,11 +4,10 @@ require_once 'canvas.php';
 class Admin extends Canvas
 {
   public function index() {
-    $_SESSION['canvas-admin-dashboard']['institution_id'] = 3;
     $data = array();
 
     $term_model = $this->loadModel('TermModel');
-    $data['terms'] = $term_model->findAll(array('institution_id'=>$_SESSION['canvas-admin-dashboard']['institution_id']));
+    $data['terms'] = $term_model->findAll(array('institution_id'=>$this->institution['id']));
 
     if(!count($data['terms'])) {
       header('Location: ' . URL . 'admin/terms');
@@ -32,7 +31,7 @@ class Admin extends Canvas
 
     $term_model = $this->loadModel('TermModel');
     $term = $term_model->findOne(array(
-      'institution_id'=>$_SESSION['canvas-admin-dashboard']['institution_id'],
+      'institution_id'=>$this->institution['id'],
       'canvas_term_id'=>$canvas_term_id
     ));
 
@@ -45,7 +44,7 @@ class Admin extends Canvas
     $files = scandir(PATH_UPLOADS);
 
     foreach($files as $file_name) {
-      $report = preg_replace('/' . $_SESSION['canvas-admin-dashboard']['institution_id'] . '_' . $canvas_term_id . '_([^\.]+)\.csv$/', '$1', $file_name);
+      $report = preg_replace('/' . $this->institution['id'] . '_' . $canvas_term_id . '_([^\.]+)\.csv$/', '$1', $file_name);
 
       if(isset($report_match[$report])) {
         $report_match[$report] = true;
@@ -53,17 +52,39 @@ class Admin extends Canvas
     }
 
     $data = array('reports'=>$report_match, 'filters'=>$filters);
-    $data['terms'] = $term_model->findAll(array('institution_id'=>$_SESSION['canvas-admin-dashboard']['institution_id']));
+    $data['terms'] = $term_model->findAll(array('institution_id'=>$this->institution['id']));
 
     $this->render('admin/import', $data);
   }
   
+  public function institution() {
+    $data = array('institution'=>$this->institution);
+    $this->render('admin/institution', $data);
+  }
+  public function institution_save() {
+    $institution_model = $this->loadModel('InstitutionModel');
+    $properties = array(
+      'id'=>$this->institution['id'],
+      'name'=>$_POST['institution']['name'],
+      'slug'=>$_POST['institution']['slug'],
+      'primary_canvas_account_id'=>$_POST['institution']['primary_canvas_account_id']
+    );
+
+    if($_POST['institution']['oauth_token']) {
+      $properties['oauth_token'] = $_POST['institution']['oauth_token'];
+    }
+
+    $institution_model->update($properties);
+    
+    header('Location: ' . URL .'admin/index');
+  }
+
   public function terms() {
     $report_match = array('terms'=>false);
     $files = scandir(PATH_UPLOADS);
 
     foreach($files as $file_name) {
-      $report = preg_replace('/' . $_SESSION['canvas-admin-dashboard']['institution_id'] . '_(terms)\.csv$/', '$1', $file_name);
+      $report = preg_replace('/' . $this->institution['id'] . '_(terms)\.csv$/', '$1', $file_name);
 
       if(isset($report_match[$report])) {
         $report_match[$report] = true;
@@ -81,7 +102,7 @@ class Admin extends Canvas
     $files = scandir(PATH_UPLOADS);
 
     foreach($files as $file_name) {
-      $report = preg_replace('/' . $_SESSION['canvas-admin-dashboard']['institution_id'] . '_(users)\.csv$/', '$1', $file_name);
+      $report = preg_replace('/' . $this->institution['id'] . '_(users)\.csv$/', '$1', $file_name);
 
       if(isset($report_match[$report])) {
         $report_match[$report] = true;
