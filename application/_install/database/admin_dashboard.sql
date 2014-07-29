@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 25, 2014 at 02:40 PM
+-- Generation Time: Jul 28, 2014 at 08:16 PM
 -- Server version: 5.1.73
 -- PHP Version: 5.3.3-7+squeeze20
 
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS `course_meta` (
   UNIQUE KEY `course_id` (`course_id`,`meta_category_id`,`meta_name`,`sort`,`canvas_term_id`,`institution_id`),
   KEY `institution_id` (`institution_id`),
   KEY `canvas_term_id` (`canvas_term_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=41186 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=42563 ;
 
 -- --------------------------------------------------------
 
@@ -138,14 +138,18 @@ CREATE TABLE IF NOT EXISTS `enrollments` (
 -- --------------------------------------------------------
 
 --
--- Stand-in structure for view `enrollment_counts`
+-- Table structure for table `enrollment_counts`
 --
+
 CREATE TABLE IF NOT EXISTS `enrollment_counts` (
-`role` varchar(32)
-,`canvas_course_id` int(11)
-,`institution_id` int(11)
-,`enrollments` bigint(21)
-);
+  `role` varchar(128) NOT NULL,
+  `canvas_course_id` int(11) NOT NULL,
+  `institution_id` int(11) NOT NULL,
+  `canvas_term_id` int(11) NOT NULL,
+  `enrollments` int(11) NOT NULL,
+  PRIMARY KEY (`role`,`canvas_course_id`,`institution_id`,`canvas_term_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
 -- --------------------------------------------------------
 
 --
@@ -156,10 +160,12 @@ CREATE TABLE IF NOT EXISTS `institutions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `api_domain` varchar(128) NOT NULL,
   `name` varchar(128) NOT NULL,
-  `primary_canvas_account_id` int(11) NOT NULL,
-  `oauth_token` varchar(300) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+  `primary_canvas_account_id` int(11) DEFAULT NULL,
+  `oauth_token` varchar(300) DEFAULT NULL,
+  `slug` varchar(128) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `api_domain` (`api_domain`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
 
 -- --------------------------------------------------------
 
@@ -247,12 +253,3 @@ CREATE TABLE IF NOT EXISTS `xlists` (
   `synced_at` datetime NOT NULL,
   PRIMARY KEY (`canvas_xlist_course_id`,`canvas_section_id`,`institution_id`,`canvas_term_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Structure for view `enrollment_counts`
---
-DROP TABLE IF EXISTS `enrollment_counts`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`kennethl`@`%` SQL SECURITY DEFINER VIEW `enrollment_counts` AS select `enrollments`.`role` AS `role`,`enrollments`.`canvas_course_id` AS `canvas_course_id`,`enrollments`.`institution_id` AS `institution_id`,count(0) AS `enrollments` from `enrollments` group by `enrollments`.`canvas_course_id`,`enrollments`.`role`,`enrollments`.`institution_id` order by `enrollments`.`institution_id`,`enrollments`.`canvas_course_id`,`enrollments`.`role`;
