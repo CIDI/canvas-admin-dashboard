@@ -71,8 +71,8 @@ class Canvas extends Controller
         $this->account_meta($canvas_term_id, $institution['primary_canvas_account_id']);
     }
 
-    public function process_xlist($canvas_term_id) {
-        $file = $this->report_prefix($canvas_term_id) . 'xlist.csv';
+    public function process_xlists($canvas_term_id) {
+        $file = $this->report_prefix($canvas_term_id) . 'xlists.csv';
         $model = 'xlist';
         $this->import_csv($file, $model, $canvas_term_id);
     }
@@ -87,6 +87,8 @@ class Canvas extends Controller
         $file = $this->report_prefix($canvas_term_id) . 'enrollments.csv';
         $model = 'enrollment';
         $this->import_csv($file, $model, $canvas_term_id);
+
+        $this->enrollment_counts($canvas_term_id, $institution['id']);
     }
 
 
@@ -285,5 +287,80 @@ class Canvas extends Controller
 
         }
         return $index;
+    }
+
+    public function updateenrollmentcounts($canvas_term_id) {
+        $this->enrollment_counts($canvas_term_id, $this->institution['id']);
+    }
+
+    private function enrollment_counts($canvas_term_id, $institution_id) {
+        $enrollment_count_model = $this->loadModel('Enrollment_countModel');
+
+        $enrollment_count_model->delete(array(
+            'canvas_term_id'=>$canvas_term_id,
+            'institution_id'=>$institution_id
+        ));
+
+        // uber fun query to insert course counts including cross listed courses
+        $query = $this->db->prepare(
+            "-- sub query refactor
+INSERT INTO enrollment_counts (role, canvas_course_id, institution_id, canvas_term_id, enrollments)
+SELECT role, canvas_course_id, institution_id, canvas_term_id, count(*) as enrollments
+FROM
+(
+    (
+        -- all enrollments that don't have a match in the xlist table
+        SELECT e.role, e.canvas_course_id, e.institution_id,
+            e.canvas_term_id, e.canvas_user_id
+        FROM (
+            -- prefilter to speed up the query (takes over an hour if you don't)
+            SELECT *
+            FROM enrollments as t
+            WHERE t.institution_id = :institution AND t.canvas_term_id = :term
+        ) AS e
+
+        LEFT JOIN (
+            -- prefilter
+            SELECT *
+            FROM xlists as t
+            WHERE t.institution_id = :institution AND t.canvas_term_id = :term
+        ) AS x ON (
+            x.canvas_section_id = e.canvas_section_id
+        )
+        -- filter out any records that joined
+        WHERE x.canvas_xlist_course_id IS NULL
+    )
+
+    UNION
+    (
+        -- all enrollments that have a xlist record
+        -- select the xlist course ID instead
+        SELECT e.role, x.canvas_xlist_course_id as canvas_course_id, e.institution_id,
+            e.canvas_term_id, e.canvas_user_id
+        FROM (
+            -- prefilter
+            SELECT *
+            FROM enrollments as t
+            WHERE t.institution_id = :institution AND t.canvas_term_id = :term
+        ) as e
+        JOIN (
+            -- prefilter
+            SELECT *
+            FROM xlists as t
+            WHERE t.institution_id = :institution AND t.canvas_term_id = :term
+        ) as x ON (
+            e.canvas_section_id = x.canvas_section_id
+        )
+    )
+) AS term_enrollments
+-- count role enrollments for a course
+GROUP BY canvas_course_id, role, institution_id, canvas_term_id
+ORDER BY canvas_term_id, institution_id, canvas_course_id, role, canvas_user_id"
+        );
+        
+        $query->execute(array(
+            'term'=>$canvas_term_id,
+            'institution'=>$institution_id
+        ));
     }
 }

@@ -40,7 +40,7 @@ class Admin extends Canvas
       return;
     }
 
-    $report_match = array('accounts'=>false, 'courses'=>false, 'enrollments'=>false, 'xlist'=>false);
+    $report_match = array('accounts'=>false, 'courses'=>false, 'xlists'=>false, 'enrollments'=>false);
     $files = scandir(PATH_UPLOADS);
 
     foreach($files as $file_name) {
@@ -53,6 +53,24 @@ class Admin extends Canvas
 
     $data = array('reports'=>$report_match, 'filters'=>$filters);
     $data['terms'] = $term_model->findAll(array('institution_id'=>$this->institution['id']));
+
+    if($canvas_term_id) {
+      $stats_filter = array(
+        'institution'=>$this->institution['id'],
+        'term'=>$canvas_term_id
+      );
+
+      foreach($report_match as $report=>$value) {
+        $query = $this->db->prepare(
+          'SELECT count(*) as `count`, min(synced_at) as earliest_sync, max(synced_at) as latest_sync
+          FROM ' . $report . ' WHERE institution_id = :institution AND canvas_term_id = :term'
+        );
+
+        $query->execute($stats_filter);
+
+        $data['counts'][$report] = $query->fetch();
+      }
+    }
 
     $this->render('admin/import', $data);
   }
