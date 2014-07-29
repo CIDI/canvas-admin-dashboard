@@ -102,11 +102,11 @@ function checkTotals() {
             collegeNotUsingSyllabus = [];
         $('h2').each(function () {
             collegeList.push($(this).text());
-            collegeTotalCourses.push($(this).parents(".collegeList").find('li:visible').length);
-            collegePublished.push($(this).parents(".collegeList").find('.usingCanvas:visible').length);
-            collegeUnpublished.push($(this).parents(".collegeList").find('.notUsingCanvas:visible').length);
-            collegeUsingSyllabus.push($(this).parents(".collegeList").find('.fa-check-circle:visible').length);
-            collegeNotUsingSyllabus.push($(this).parents(".collegeList").find('.fa-question-circle:visible').length);
+            collegeTotalCourses.push($(this).parents(".college-list").find('li:visible').length);
+            collegePublished.push($(this).parents(".college-list").find('.usingCanvas:visible').length);
+            collegeUnpublished.push($(this).parents(".college-list").find('.notUsingCanvas:visible').length);
+            collegeUsingSyllabus.push($(this).parents(".college-list").find('.fa-check-circle:visible').length);
+            collegeNotUsingSyllabus.push($(this).parents(".college-list").find('.fa-question-circle:visible').length);
             var myClass = $(this).index();
                 // noSyllabus = $(this).next('.collegeGroup').find('.fa-question-circle').length,
                 // hasSyllabus = $(this).next('.collegeGroup').find('.fa-check-circle').length;
@@ -183,7 +183,8 @@ function checkTotals() {
     }
 }
 $(function () {
-    $("[data-toggle=tooltip]").tooltip({html:true});
+    'use strict';
+    $("[data-toggle=tooltip]").tooltip({html: true});
     checkTotals();
 });
 // // the following function grays out dropdown choices that are not in the returned courses

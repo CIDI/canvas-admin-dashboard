@@ -10,6 +10,10 @@ class ReportModel extends BaseModel {
 
 		// check if query is executable
 		if($report['executable']) {
+			if(!preg_match('/\:term\s/', $report['sql_query'])) {
+				unset($filters['term']);
+			}
+
 			// execute query
 			$query = $this->connection->prepare($report['sql_query']);
 			$query->execute($filters);

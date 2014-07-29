@@ -22,7 +22,8 @@ class Reports extends Controller {
   	}
 
 	$data = array('messages'=>array());
-	$filters = $_GET['filters'];
+	$filters = array();
+	$filters['term'] = $this->getDefaultTerm();
 	
 	$this->initializeCanvasApi($institution_code);
 
@@ -46,11 +47,12 @@ class Reports extends Controller {
   	$data['terms'] = $terms;
 
   	if(isset($_GET['filters']['course'])) {
+  		$filters['course'] = $_GET['filters']['course'];
   		$course_model = $this->loadModel('CourseModel');
 
-  		$data['course'] = $course_model->findOne(array('canvas_course_id'=>$_GET['filters']['course']));
+  		$data['course'] = $course_model->findOne(array('canvas_course_id'=>$filters['course']));
   	}
-
+  	
 	try {
 		$report_data = $report_model->query($report_code, $filters);
 
@@ -58,6 +60,8 @@ class Reports extends Controller {
 	} catch(Exception $error) {
 		$data['messages']['error'] = $error->getMessage();
 	}
+
+	$data['filters'] = $filters;
 
 	$view_path = 'reports/' . $report_code . '/' . $view;
 	
@@ -72,5 +76,28 @@ class Reports extends Controller {
 	} catch(Exception $error) {
 		print_r($error);exit;
 	}
+  }
+  protected function getDefaultTerm() {
+  	if(isset($_GET['filters']['term'])) {
+  		$term = $_GET['filters']['term'];
+  	} else {
+  		$query = $this->db->prepare('
+  			SELECT * FROM terms 
+  			WHERE institution_id= :institution
+  			AND start_date < :date
+  			OR start_date IS NULL
+  			ORDER BY start_date DESC
+  		');
+  		$futureDate = new DateTime();
+  		$futureDate->add(new DateInterval('P30D'));
+  		$query->execute(array(
+  			'institution'=>$this->institution['id'],
+  			'date'=>$futureDate->format('Y-m-d')
+  		));
+  		$result = $query->fetch();
+
+  		$term = $result['canvas_term_id'];
+  	}
+  	return $term;
   }
 }

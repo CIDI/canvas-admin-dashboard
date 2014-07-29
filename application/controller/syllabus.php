@@ -30,6 +30,8 @@ class Syllabus extends Controller
 			'message'=>'Course not specified.'
 		);
 	}
+
+  $data['institution'] = $this->institution;
 	
 	$this->render('syllabus/index', $data);
   }

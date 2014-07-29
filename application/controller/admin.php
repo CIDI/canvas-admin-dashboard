@@ -8,6 +8,7 @@ class Admin extends Canvas
 
     $term_model = $this->loadModel('TermModel');
     $data['terms'] = $term_model->findAll(array('institution_id'=>$this->institution['id']));
+    $data['institution'] = $this->institution;
 
     if(!count($data['terms'])) {
       header('Location: ' . URL . 'admin/terms');
@@ -53,6 +54,7 @@ class Admin extends Canvas
 
     $data = array('reports'=>$report_match, 'filters'=>$filters);
     $data['terms'] = $term_model->findAll(array('institution_id'=>$this->institution['id']));
+    $data['institution'] = $this->institution;
 
     if($canvas_term_id) {
       $stats_filter = array(
@@ -85,6 +87,7 @@ class Admin extends Canvas
       'id'=>$this->institution['id'],
       'name'=>$_POST['institution']['name'],
       'slug'=>$_POST['institution']['slug'],
+      'logo'=>$_POST['institution']['logo'],
       'primary_canvas_account_id'=>$_POST['institution']['primary_canvas_account_id']
     );
 
@@ -110,6 +113,7 @@ class Admin extends Canvas
     }
 
     $data = array('reports'=>$report_match);
+    $data['institution'] = $this->institution;
 
     $this->render('admin/import', $data);
 
@@ -128,7 +132,8 @@ class Admin extends Canvas
     }
 
     $data = array('reports'=>$report_match);
-
+    $data['institution'] = $this->institution;
+    
     $this->render('admin/import', $data);
 
   }

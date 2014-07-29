@@ -48,15 +48,13 @@ li.exclude ol {
   padding: 0 10px;
 }
 h1 {
-  margin: 40px 0 45px 10px;
+  margin: 20px 0;
   text-shadow: 0px 2px 2px #000;
 }
 h2 {
-  background: #036;
-  border-radius: 5px;
-  box-shadow: 0px 2px 2px #9c9c9c;
-  color: #fff;
   padding: 10px;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 20px;
 }
 .li i {
   margin-right: 5px;
@@ -74,7 +72,7 @@ h2 {
   color: #8d8d8d;
 }
 .heading {
-  background: #036;
+  background: #0f2439;
   box-shadow: 0px 2px 2px #9c9c9c;
   color: #fff;
   margin-bottom: 20px;
@@ -133,6 +131,10 @@ select {
   float: right;
   font-size: 16px;
   margin-right: 10px;
+}
+footer .logo img {
+  max-width: 300px;
+  max-height: 110px;
 }
 @media (max-width: 767px) {
   body {

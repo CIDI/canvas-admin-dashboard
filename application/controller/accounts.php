@@ -4,12 +4,10 @@ class Accounts extends Controller
 {
   public function index() {
 		// getaccount
-		$userAccountList = $this->canvasApi->listUserAccounts();
-		$workingList = json_decode($userAccountList, true);
-		
 		$data = array(
-			'primary_account'=>$workingList
+			'primary_account'=>$this->institution['primary_canvas_account_id']
 		);
+		print_r($data);exit;
 		$this->render('accounts/index', $data);
   }
 	
