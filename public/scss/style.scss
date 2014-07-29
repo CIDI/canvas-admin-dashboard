@@ -22,6 +22,22 @@ li.exclude {
 	}
 }
 
+.depth-1 {
+	padding-left: 25px;
+	background: #ddd;
+	font-size: 1.5em;
+}
+
+.depth-2 {
+	background: #eee;
+	padding-left: 50px;
+	font-size: 1.25em;
+}
+
+.depth-3 {
+	padding-left: 75px;
+}
+
 .btn.active { 
 	background: #0081c2; 
 	color: #fff;

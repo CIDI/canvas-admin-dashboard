@@ -1,29 +1,41 @@
 <?php
 
 class AccountModel extends BaseModel {
-	static $ORDER = "name, canvas_account_id";
-	
-	public function stats($filter=array()) {
+	static $ORDER = "name, accounts.canvas_account_id";
 
-		// in your controller, call like this
-		////
-		// $filter = array('account'=>15);
-		// $acconut_stats = $account_model->stats($filter);
+	public function toggle($filter, $state='') {
+		// find the account being toggled
+		$account = $this->findOne($filter, '', 'JOIN account_meta ON (account_meta.canvas_account_id = accounts.canvas_account_id)');
 
+		if(!$account) {
+			var_dump($_POST);
+			throw new Exception("Account not found (".$filter['canvas_account_id'].")", 1);
+			
+		}
 
-		$query_string = "SELECT count(*) FROM accounts WHERE canvas_parent_id = :account";
+		if($state === '') {
+			$state = $account['whitelist'] ? 0 : 1;
+		}
 
-		//echo '<pre>';echo $query_string;echo "\n\n";print_r($filter);exit;
+		$query = $this->db->prepare('
+			UPDATE account_meta
+			SET
+				whitelist = :state
+			WHERE
+				institution_id = :institution_id
+				AND canvas_term_id = :canvas_term_id
+				AND lft >= :lft
+				AND rght <= :rght 
+		');
 
-		//$query = $this->db->query($query_string);
-		// $result = $query->fetchAll();
-		//print_r($query->fetchAll());exit;
+		$properties = $filter;
+		unset($properties['canvas_account_id']);
+		$properties['lft'] = (int)$account['lft'];
+		$properties['rght'] = (int)$account['rght'];
+		$properties['state'] = $state;
 
-		$query = $this->db->prepare($query_string);
-		$query->execute($filter);
+		$query->execute($properties);
 
-		$result = $query->fetchAll();
-
-		return $result;
+		return $state;
 	}
 }

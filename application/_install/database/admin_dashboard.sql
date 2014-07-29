@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 29, 2014 at 12:51 PM
+-- Generation Time: Jul 29, 2014 at 04:14 PM
 -- Server version: 5.1.73
 -- PHP Version: 5.3.3-7+squeeze20
 
@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS `account_meta` (
   `rght` int(11) DEFAULT NULL,
   `lft` int(11) DEFAULT NULL,
   `institution_id` int(11) NOT NULL,
+  `whitelist` tinyint(1) NOT NULL,
   PRIMARY KEY (`canvas_account_id`,`canvas_term_id`,`institution_id`),
   KEY `depth` (`depth`),
   KEY `right` (`rght`),
