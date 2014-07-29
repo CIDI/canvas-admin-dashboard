@@ -1,13 +1,13 @@
 {% extends "reports/_template.twig" %}
 
 {% block page_title %}
-	LTI Tools
+	 {{ institution.slug|upper }} LTI Tools
 {% endblock %}
 
 {% block topbar %}
     <div class="heading">
         <div class="container">
-            <h1><i class="fa fa-cogs"></i> LTI Tools</h1>
+            <h1><i class="fa fa-cogs"></i> {{ institution.slug|upper }} LTI Tools</h1>
         </div>
     </div>
 {% endblock %}

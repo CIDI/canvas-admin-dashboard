@@ -28,6 +28,7 @@ JOIN account_meta as am ON (
 )
 JOIN accounts as p_a ON (
     a.canvas_parent_id = p_a.canvas_account_id
+    AND p_a.institution_id = :institution
 )
 JOIN account_meta as p_am ON (
     a.canvas_parent_id = p_am.canvas_account_id 

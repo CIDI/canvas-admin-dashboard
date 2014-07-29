@@ -35,6 +35,8 @@
 				{% else %}
 					<label for="{{ report }}">{{ report|capitalize }}: </label>
 					<input type="file" name="{{ report }}" id="{{ report }}">
+
+					{{ counts[report].count }} records
 				{% endif %}
 			</div>
 		{% endfor %}

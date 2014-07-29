@@ -1,9 +1,15 @@
 {% extends "_templates/base.twig" %}
-
+{% block page_title %}
+    Syllabus Content - {{ syllabus.name }}
+{% endblock %}
 {% block topbar %}
+    <div class="heading">
+        <div class="container">
+			<h1>{{ syllabus.name }}</h1>
+        </div>
+    </div>
 {% endblock %}
 
 {% block content %}
-	{{ syllabus|raw }}
-
+	{{ syllabus.syllabus_body|raw }}
 {% endblock %}

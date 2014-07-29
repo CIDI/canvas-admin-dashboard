@@ -81,9 +81,8 @@ class CanvasApi {
 		
 		function getCourseSyllabus($courseID){
 			$apiUrl = "courses/".$courseID."?include[]=syllabus_body";
-			$response = $this->curlGet($apiUrl);
-			$responseData = json_decode($response, true);
-			return $responseData['syllabus_body'];
+			$responseData = $this->curlGet($apiUrl);
+			return $responseData;
 		}
 		function getTeacher($courseID){
 			$getTeacherUrl = "courses/".$courseID."/users/?enrollment_type=teacher";

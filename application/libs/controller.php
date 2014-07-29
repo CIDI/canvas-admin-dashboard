@@ -38,18 +38,25 @@ class Controller
         $this->db = new PDO(DB_TYPE . ':host=' . DB_HOST . ';dbname=' . DB_NAME, DB_USER, DB_PASS, $options);
     }
 		
-		private function initializeCanvasApi() {
-			if (isset($_SESSION['canvas-admin-dashboard']['institution']['id'])) {
-				$instution_model = $this->loadModel('InstitutionModel');
-				$this->institution = $instution_model->findByKey($_SESSION['canvas-admin-dashboard']['institution']['id']);
-				$url = 'https://' . $this->institution['api_domain'];
-				require_once 'canvas/canvas-api.php';
-				$this->canvasApi = new CanvasApi($url, $this->institution['oauth_token']);
-			} else {
-				$_SESSION['canvas-admin-dashboard']['institution']['id'] = 4;
-				echo 'did not work' . $_SESSION['canvas-admin-dashboard']['institution']['id'];exit;
-			}
+	protected function initializeCanvasApi($institution='') {
+		$instution_model = $this->loadModel('InstitutionModel');
+
+		if ($institution == '' && isset($_SESSION['canvas-admin-dashboard']['institution']['id'])) {
+			$institution = $_SESSION['canvas-admin-dashboard']['institution']['id'];
 		}
+
+		if(is_numeric($institution)){
+			$this->institution = $instution_model->findByKey($institution);
+		} else if($institution != '') {
+			$this->institution = $instution_model->findOne(array('slug'=>$institution));
+		}
+
+		if(isset($this->institution) && $this->institution['oauth_token']) {
+			$url = 'https://' . $this->institution['api_domain'];
+			require_once 'canvas/canvas-api.php';
+			$this->canvasApi = new CanvasApi($url, $this->institution['oauth_token']);
+		}
+	}
 
     /**
      * Load the model with the given name.
