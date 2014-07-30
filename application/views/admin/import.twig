@@ -18,10 +18,10 @@
 					<a href="{{ constant('URL') }}admin/institution">Institution</a>
 				</li>
 				<li>
-					<a href="{{ constant('URL') }}admin/index">Syllabus</a>
+					<a href="{{ constant('URL') }}reports/{{ institution.slug }}/syllabus/dashboard" target="_blank">Syllabus</a>
 				</li>
 				<li>
-					<a href="{{ constant('URL') }}admin/index">LTI</a>
+					<a href="{{ constant('URL') }}reports/{{ institution.slug }}/lti/tools" target="_blank">LTI</a>
 				</li>
 			</ul>
 		</div>
@@ -59,7 +59,7 @@
 				<label for="{{ report }}" class="col-sm-2 control-label">{{ report|capitalize }}: </label>
 				<div class="col-sm-10">
 					{% if exists %}
-						<a href="{{ constant('URL') }}admin/process_{{ report }}">Process {{ report|capitalize }}</a>
+						<a href="{{ constant('URL') }}admin/process_{{ report }}/{{ filters.term }}">Process {{ report|capitalize }}</a>
 					{% else %}
 						<input type="file" name="{{ report }}" id="{{ report }}">
 

@@ -26,10 +26,11 @@
 				<tr>
 					<td align="right">{{ record.course_count }}</td>
 					<td>
-						{% if record.cm_name_meta_value != 'NO ICO' %}
-							<img src="{{ record.tool_icon }}"> {{ record.cm_name_meta_value }}</td>
+						{% if record.tool_icon != 'NO ICO' %}
+							<img src="{{ record.tool_icon }}"></td>
 						{% endif %}
-					<td>{{ record.tool_name }}</td>
+					<td><a href="{{ constant('URL') }}reports/{{ institution.slug }}/lti/courses&filters[tool_name]={{ record.tool_name|url_encode }}&filters[term]={{ filters.term }}">{{ record.tool_name }}</a>
+					</td>
 				</tr>
 		{% endfor %}
 		</tbody>

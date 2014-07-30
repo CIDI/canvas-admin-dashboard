@@ -49,5 +49,10 @@ define('DB_PASS', '');
 
 define('LTI_SHARED_SECRET', 'secretpasscode');
 
+
+// Encryption Password and salt used for encrypting OAuth tokens in database
+define('ENCRYPTION_KEY', 'someString');
+define('ENCRYPTION_SALT', 'someString');
+
 // Customize timezone for database timestamps
 define('NOW', gmdate("Y-m-d H:i:s"));

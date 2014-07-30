@@ -7,7 +7,16 @@ class CanvasApi {
 		// Root url for all api calls and links back to Canvas
 		$this->canvasURL = $url;
 		// This is the header containing the authorization token from Canvas
-		$this->token = $token;
+		require_once './application/libs/cryptastic/cryptastic.php';
+	    //decrypt token
+	    $cryptastic = new cryptastic;
+	    $key = $cryptastic->pbkdf2(ENCRYPTION_KEY, ENCRYPTION_SALT, 1000, 32);
+	    $this->token = $cryptastic->decrypt($token, $key);
+
+	    // This is the header containing the authorization token from Canvas
+	    $tokenHeader = array("Authorization: Bearer ".$token);
+
+
 		
 		$this->tokenHeader = array("Authorization: Bearer ".$this->token);
 	}

@@ -44,8 +44,8 @@ class Canvas extends Controller
 
                     header('Location: ' . URL . 'admin/institution');
                 }
-
                 $_SESSION['canvas-admin-dashboard']['institution']['id'] = $institution['id'];
+                $this->institution = $institution;
             } else {
                 // if not, show message
                 $this->render('admin/unauthorized');exit;
@@ -58,17 +58,13 @@ class Canvas extends Controller
         $model = 'account';
         $this->import_csv($file, $model, $canvas_term_id);
 
-        $institution_model = $this->loadModel('InstitutionModel');
-        $institution = $institution_model->findByKey($this->institution['id']);
-
         $account_meta_model = $this->loadModel('Account_metaModel');
-
         $account_meta_model->delete(array(
             'canvas_term_id'=>$canvas_term_id,
-            'institution_id'=>$institution['id']
+            'institution_id'=>$this->institution['id']
         ));
 
-        $this->account_meta($canvas_term_id, $institution['primary_canvas_account_id']);
+        $this->account_meta($canvas_term_id, $this->institution['primary_canvas_account_id']);
     }
 
     public function process_xlists($canvas_term_id) {
@@ -88,7 +84,7 @@ class Canvas extends Controller
         $model = 'enrollment';
         $this->import_csv($file, $model, $canvas_term_id);
 
-        $this->enrollment_counts($canvas_term_id, $institution['id']);
+        $this->enrollment_counts($canvas_term_id, $this->institution['id']);
     }
 
 
@@ -126,7 +122,8 @@ class Canvas extends Controller
 
     public function collect_data($term, $category, $item='all') {
         $course_model = $this->loadModel('CourseModel');
-        $active_courses = $course_model->find_active($term);
+
+        $active_courses = $course_model->find_active($term, $this->institution['id']);
 
         if ($category == 'syllabus') {
             $resource_pattern = 'courses/:course_id?include[]=syllabus_body';
@@ -136,7 +133,6 @@ class Canvas extends Controller
             $resource_pattern = 'courses/:course_id/external_tools';
             $report = $this->loadReport('LtiReport');
         }
-
         foreach ($active_courses as $i => $course) {
             $api_url = str_replace(':course_id', $course['canvas_course_id'], $resource_pattern);
             $response = $this->canvasApi->curlGet($api_url);
@@ -145,13 +141,14 @@ class Canvas extends Controller
             $meta_category_model = $this->loadModel('Meta_categoryModel');
             $meta_category = $meta_category_model->findOne(array('category_name'=>$category));
 
-            $report->process($term, $item, $response, $course['canvas_course_id'], $meta_category['id']);
+            $report->process($this->institution['id'], $term, $item, $response, $course['canvas_course_id'], $meta_category['id']);
 
-        
+            
             // if ($i > 30) {
             //     break;
             // }
         }
+        header('Location: ' . URL . 'admin');
     }
 
     private function import_csv($fname, $model_name, $canvas_term_id='', $remove_file=true) {
@@ -249,7 +246,8 @@ class Canvas extends Controller
         // get the account list from canvas
         $account_filter = array(
             'canvas_parent_id'=>$parent_id,
-            'institution_id'=>$this->institution['id']
+            'institution_id'=>$this->institution['id'],
+            'canvas_term_id'=>$term_id
         );
         $accounts = $account_model->findAll($account_filter);
         

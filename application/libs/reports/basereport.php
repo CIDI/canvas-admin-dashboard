@@ -38,7 +38,7 @@ class BaseReport {
 		return $this->interesting_data;
 	}
 
-	public function process($term, $report, $data, $course_id, $meta_category_id, $save=true) {
+	public function process($institution, $term, $report, $data, $course_id, $meta_category_id, $save=true) {
 		// if there is no data to process, we are done here
 		if(!$data || !count($data)) {
 			return;
@@ -50,7 +50,7 @@ class BaseReport {
 				$this->course_meta_model->delete(array(
 		            'course_id'=> $course_id,
 		            'meta_category_id'=> $meta_category_id,
-		            'institution_id'=> $_SESSION['canvas-admin-dashboard']['institution_id'],
+		            'institution_id'=> $institution,
 		            'canvas_term_id'=> $term
 		        ));
 		    $dataType = gettype($data);
@@ -96,7 +96,7 @@ class BaseReport {
 					            'meta_value'=> $value,
 					            'synced_at'=> NOW,
 					            'sort'=> $sort,
-					            'institution_id'=> $_SESSION['canvas-admin-dashboard']['institution_id'],
+					            'institution_id'=> $institution,
 					            'canvas_term_id'=> $term
 					        ));
 						}
@@ -105,18 +105,18 @@ class BaseReport {
 			}
 			
 			if($report == 'all') {
-				$this->all($term, $data, $course_id, $meta_category_id);
+				$this->all($institution, $term, $data, $course_id, $meta_category_id);
 			} else {
 				$this->$report($data);
 			}
 		}
 	}
 
-	public function all($term, $data, $course_id, $meta_category_id){
+	public function all($institution, $term, $data, $course_id, $meta_category_id){
 		
 
 		foreach($this->reports as $report_name) {
-			$this->process($term, $report_name, $data, $course_id, $meta_category_id, false);
+			$this->process($institution, $term, $report_name, $data, $course_id, $meta_category_id, false);
 		}
 	}
 }

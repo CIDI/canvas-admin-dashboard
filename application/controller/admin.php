@@ -92,7 +92,12 @@ class Admin extends Canvas
     );
 
     if($_POST['institution']['oauth_token']) {
+      require_once './application/libs/cryptastic/cryptastic.php';
       $properties['oauth_token'] = $_POST['institution']['oauth_token'];
+      //encrypt token
+      $cryptastic = new cryptastic;
+      $key = $cryptastic->pbkdf2(ENCRYPTION_KEY, ENCRYPTION_SALT, 1000, 32);
+      $properties['oauth_token'] = $cryptastic->encrypt($properties['oauth_token'], $key);
     }
 
     $institution_model->update($properties);

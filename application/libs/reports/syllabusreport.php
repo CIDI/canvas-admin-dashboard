@@ -7,10 +7,4 @@ class SyllabusReport extends BaseReport {
 		$this->register('has_syllabus');
 		$this->track('syllabus_body');
 	}
-
-	public function has_syllabus($meta_record){
-
-		echo 'hi'; exit;
-
-	}
 }

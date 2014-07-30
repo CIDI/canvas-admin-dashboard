@@ -5,7 +5,7 @@ class Reports extends Controller {
   public function index() {
  	$parts = explode('/', $_GET['url']);
 
-  	if(count($parts) < 3) {
+  	if(count($parts) < 4) {
   		//some error...
   		throw new Exception("Cannot find the report you are looking for. Not enough parameters.");
   		
@@ -13,16 +13,11 @@ class Reports extends Controller {
   	}
 
   	$institution_code = $parts[1];
-  	$report_code = $parts[2];
-
-  	if(count($parts) > 3) {
-  		$view = $parts[3];
-  	} else {
-  		$view = 'index';
-  	}
+    $report_category = $parts[2];
+  	$report_view = $parts[3];
 
 	$data = array('messages'=>array());
-	$filters = array();
+	$filters = $_GET['filters'];
 	$filters['term'] = $this->getDefaultTerm();
 	
 	$this->initializeCanvasApi($institution_code);
@@ -52,8 +47,8 @@ class Reports extends Controller {
 
   		$data['course'] = $course_model->findOne(array('canvas_course_id'=>$filters['course']));
   	}
-  	
 	try {
+    $report_code = $report_category . '/' . $report_view;
 		$report_data = $report_model->query($report_code, $filters);
 
 		$data['report_data'] = $report_data;
@@ -63,7 +58,7 @@ class Reports extends Controller {
 
 	$data['filters'] = $filters;
 
-	$view_path = 'reports/' . $report_code . '/' . $view;
+	$view_path = 'reports/' . $report_code;
 	
 	if(!realpath(dirname(__DIR__) . '/views/' . $view_path . '.twig')) {
 		$view_path = 'reports/view';

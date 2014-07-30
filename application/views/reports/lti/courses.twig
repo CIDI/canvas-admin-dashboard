@@ -1,0 +1,41 @@
+{% extends "reports/_template.twig" %}
+
+{% block page_title %}
+	 LTI Tool Courses
+{% endblock %}
+
+{% block topbar %}
+    <div class="heading">
+        <div class="container">
+            <h1><i class="fa fa-cog"></i> {{ institution.slug|upper }} Courses using {{ filters.tool_name }}</h1>
+        </div>
+    </div>
+	{% endblock %}
+
+{% block content %}
+	<table class="table table-striped"> 	
+		<thead>
+			<tr>
+				<th>Courses</th>
+				<th>LTI Details</th>
+				<th>Canvas Links</th>
+			</tr>
+		</thead>
+		<tbody>
+	{% for record in report_data %}
+		<tr>
+			<td>
+				{{ record.long_name }}
+			</td>
+			<td>
+				<a href="{{ constant('URL') }}reports/{{ institution.id }}/lti/course_tools&filters[course]={{ record.cm_name_course_id }}">Course tool details</a>
+			</td>
+			<td>
+				<a href="https://{{ institution.api_domain }}/courses/{{ record.cm_name_course_id }}" target="_blank">Course</a> |
+				<a href="https://{{ institution.api_domain }}/courses/{{ record.cm_name_course_id }}/settings" target="_blank">Settings</a>
+			</td>
+		</tr>
+	{% endfor %}
+			</tbody>
+	</table>
+{% endblock %}
