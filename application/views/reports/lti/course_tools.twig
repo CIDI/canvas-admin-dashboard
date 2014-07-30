@@ -1,0 +1,44 @@
+{% extends "reports/_template.twig" %}
+
+{% block page_title %}
+	LTI Tools by Course
+{% endblock %}
+
+{% block masthead %}
+{% endblock %}
+
+{% block topbar %}
+    <div class="heading">
+        <div class="container">
+            <h1><i class="fa fa-cogs"></i> Course LTI Tools for {{ course.long_name }}</h1>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+	{% set sort = '' %}
+	{% for record in report_data %}
+		{% if sort != record.sort %}
+			{% set sort = record.sort %}
+
+			{% if loop.index > 1 %}
+					</tbody>
+				</table>
+			{% endif %}
+
+			<table class="table table-bordered table-striped">
+				<thead>
+					<th>Name</th>
+					<th>Value</th>
+				</thead>
+				<tbody>
+		{% endif %}
+		
+		<tr>
+			<td>{{ record.meta_name }}</td>
+			<td>{{ record.meta_value }}</td>
+		</tr>
+	{% endfor %}
+</tbody>
+</table>
+{% endblock %}
