@@ -69,6 +69,10 @@ h2 {
   border-bottom: 1px solid #ccc;
   margin-bottom: 20px;
 }
+.courses h2 {
+  border-bottom: none;
+  padding: 0;
+}
 .li i {
   margin-right: 5px;
 }

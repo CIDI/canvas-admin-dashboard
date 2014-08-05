@@ -37,42 +37,46 @@
 {% endblock %}
 
 {% block content %}
-	<ul class="nav nav-pills">
-		<li>
-			<a href="{{ constant('URL') }}admin/collect_data/{{ filters.term }}/syllabus">Synchronize Syllabus Data</a>
-		</li>
-		<li>
-			<a href="{{ constant('URL') }}admin/collect_data/{{ filters.term }}/lti">Synchronize LTI Data</a>
-		</li>
-		<li>
-			<a class="pull-right" href="{{ constant('URL') }}admin/terms">Update Terms</a>
-		</li>
-	</ul>
-	<form action="{{ constant('URL') }}admin/upload" class="form-horizontal" enctype="multipart/form-data"
-		method="post">
-		{% if terms %}
-			{% include '_templates/term_select.php' %}
-		{% endif %}
+	<div class="row" style="margin-bottom:10px;">
+		<ul class="nav nav-pills">
+			<li>
+				<a href="{{ constant('URL') }}admin/collect_data/{{ filters.term }}/syllabus">Synchronize Syllabus Data</a>
+			</li>
+			<li>
+				<a href="{{ constant('URL') }}admin/collect_data/{{ filters.term }}/lti">Synchronize LTI Data</a>
+			</li>
+			<li>
+				<a class="pull-right" href="{{ constant('URL') }}admin/terms">Update Terms</a>
+			</li>
+		</ul>
+	</div>
+	<div class="row">
+		<form action="{{ constant('URL') }}admin/upload" class="form-horizontal" enctype="multipart/form-data"
+			method="post">
+			{% if terms %}
+				{% include '_templates/term_select.php' %}
+			{% endif %}
 
-		{% for report,exists in reports %}
+			{% for report,exists in reports %}
+				<div class="form-group">
+					<label for="{{ report }}" class="col-sm-2 control-label">{{ report|capitalize }}: </label>
+					<div class="col-sm-10">
+						{% if exists %}
+							<a href="{{ constant('URL') }}admin/process_{{ report }}/{{ filters.term }}">Process {{ report|capitalize }}</a>
+						{% else %}
+							<input type="file" name="{{ report }}" id="{{ report }}">
+
+							<span class="badge">{{ counts[report].count|number_format }}</span> records
+						{% endif %}
+					</div>
+				</div>
+			{% endfor %}
 			<div class="form-group">
-				<label for="{{ report }}" class="col-sm-2 control-label">{{ report|capitalize }}: </label>
-				<div class="col-sm-10">
-					{% if exists %}
-						<a href="{{ constant('URL') }}admin/process_{{ report }}/{{ filters.term }}">Process {{ report|capitalize }}</a>
-					{% else %}
-						<input type="file" name="{{ report }}" id="{{ report }}">
-
-						<span class="badge">{{ counts[report].count|number_format }}</span> records
-					{% endif %}
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-default">Import</button>
 				</div>
 			</div>
-		{% endfor %}
-		<div class="form-group">
-			<div class="col-sm-offset-2 col-sm-10">
-				<button type="submit" class="btn btn-default">Import</button>
-			</div>
-		</div>
-	</form>
+		</form>
+	</div>
 
 {% endblock %}
