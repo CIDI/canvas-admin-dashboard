@@ -36,27 +36,30 @@
 {% endblock %}
 
 {% block content %}
-	<ul class="nav nav-pills">
-		<li>
-	    	<a href="{{ constant('URL') }}admin/terms">Update Institution Terms</a>
-		</li>
-		<li>
-			<a href="{{ constant('URL') }}admin/users">Update Institution Users</a>
-		</li>
-	</ul>
-
-	<form action="{{ constant('URL') }}admin/import" class="form-horizontal" enctype="multipart/form-data"
-       method="post">
-		<h2>Import term data</h2>
-		{% if terms %}
-			{% include '_templates/term_select.php' %}
-		{% endif %}
-		<div class="form-group">
-			<div class="col-sm-offset-2 col-sm-10">
-				<button type="submit" class="btn btn-default">Next</button>
+	<div class="row">
+		<ul class="nav nav-pills">
+			<li>
+		    	<a href="{{ constant('URL') }}admin/terms">Update Institution Terms</a>
+			</li>
+			<li>
+				<a href="{{ constant('URL') }}admin/users">Update Institution Users</a>
+			</li>
+		</ul>
+	</div>
+	<div class="row">
+		<form action="{{ constant('URL') }}admin/import" class="form-horizontal" enctype="multipart/form-data"
+	       method="post">
+			<h2>Import term data</h2>
+			{% if terms %}
+				{% include '_templates/term_select.php' %}
+			{% endif %}
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-default">Next</button>
+				</div>
 			</div>
-		</div>
-	</form>
+		</form>
+	</div>
 
 
 {% endblock %}
