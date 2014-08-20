@@ -4,6 +4,17 @@
 	 LTI Tool Courses
 {% endblock %}
 
+{% block masthead %}
+	<div class="container">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li><a href="{{ constant('URL') }}reports/{{ institution.slug }}/lti/tools&filters[term]={{ filters.term }}">LTI Tools</a></li>
+				<li class="active">{{ filters.tool_name }}</li>
+			</ol>
+		</div>
+	</div>
+{% endblock %}
+
 {% block topbar %}
     <div class="heading">
         <div class="container">

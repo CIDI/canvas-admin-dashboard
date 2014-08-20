@@ -10,29 +10,40 @@
             <h1><i class="fa fa-cogs"></i> {{ institution.slug|upper }} LTI Tools</h1>
         </div>
     </div>
+    <div class="container">
+		<div class="row">
+			<ol class="breadcrumb">
+			  <li class="active">LTI Tools</li>
+			</ol>
+		</div>
+	</div>
 {% endblock %}
 
 {% block content %}
-	<table class="table table-striped"> 	
-		<thead>
-			<tr>
-				<th width="40">Course Count</th>
-				<th width="30"></th>
-				<th>Tool Name</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for record in report_data %}
+	{% if report_data|length > 0 %}
+		<table class="table table-striped"> 	
+			<thead>
 				<tr>
-					<td align="right">{{ record.course_count }}</td>
-					<td>
-						{% if record.tool_icon != 'NO ICO' %}
-							<img src="{{ record.tool_icon }}"></td>
-						{% endif %}
-					<td><a href="{{ constant('URL') }}reports/{{ institution.slug }}/lti/courses&filters[tool_name]={{ record.tool_name|url_encode }}&filters[term]={{ filters.term }}">{{ record.tool_name }}</a>
-					</td>
+					<th width="40">Course Count</th>
+					<th width="30"></th>
+					<th>Tool Name</th>
 				</tr>
-		{% endfor %}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				{% for record in report_data %}
+					<tr>
+						<td align="right">{{ record.course_count }}</td>
+						<td>
+							{% if record.tool_icon != 'NO ICO' %}
+								<img src="{{ record.tool_icon }}"></td>
+							{% endif %}
+						<td><a href="{{ constant('URL') }}reports/{{ institution.slug }}/lti/courses&filters[tool_name]={{ record.tool_name|url_encode }}&filters[term]={{ filters.term }}">{{ record.tool_name }}</a>
+						</td>
+					</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	{% else %}
+		<div class="alert alert-warning" role="alert">No data for the selected term</div>
+	{% endif %}
 {% endblock %}
