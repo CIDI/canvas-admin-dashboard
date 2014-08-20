@@ -1,6 +1,6 @@
 {% extends "reports/_template.twig" %}
 {% block page_title %}
-    Syllabus Tracker
+    {{ institution.slug|upper }} Syllabus Tracker
 {% endblock %}
 {% block topbar %}
     <div class="heading">
@@ -11,47 +11,53 @@
 {% endblock %}
 
 {% block content %}
-
-    <div class="row">
-        <div class="col-lg-6 col-md-6 well">
-            <div class="row">
-                <div class="col-lg-6 col-md-6">
-                    <div id="canvasUse" style="height: 300px;"></div>
-                </div>
-                <div class="col-lg-6 col-md-6">
-                    <a href="#" class="btn btn-default btn-block usingCanvasBtn">
-                        Students Can Access Course<br>
-                        <span class="label label-primary"><span class="usingCanvasTotal">0</span> / <span class="grandTotal">0</span></span> 
-                        <span class="label label-primary usingCanvasPer">0%</span> 
-                    </a>
-                    <a href="#" class="btn btn-default btn-block notUsingCanvasBtn">
-                        Not Using Canvas<br>
-                        <span class="label label-default"><span class="notUsingCanvasTotal">0</span> / <span class="grandTotal">0</span></span> 
-                        <span class="label label-default notUsingCanvasPer">0%</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6 col-md-6 well">
-            <div class="row">
-                <div class="col-lg-6 col-md-6">
-                    <div id="syllabusState" style="height: 300px;"></div>
-                </div>
-                <div class="col-lg-6 col-md-6">
-                    <a href="#" class="btn btn-default btn-block hasSyllabusBtn">
-                        Content in Syllabus Page<br>
-                        <span class="label label-success"><span class="hasSyllabusTotal">0</span> / <span class="usingCanvasTotal">0</span></span> 
-                        <span class="label label-success hasSyllabusPer">0%</span> 
-                    </a>
-                    <a href="#" class="btn btn-default btn-block noSyllabusBtn">
-                        No Content in Syllabus Page<br>
-                        <span class="label label-danger"><span class="noSyllabusTotal">0</span> / <span class="usingCanvasTotal">0</span></span> 
-                        <span class="label label-danger noSyllabusPer">0%</span> 
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+	{% if report_data|length > 0 %}
+	    <div class="row">
+	        <div class="col-lg-6 col-md-6 well">
+	            <div class="row">
+	                <div class="col-lg-6 col-md-6">
+	                    <div id="canvasUse" style="height: 300px;"></div>
+	                </div>
+	                <div class="col-lg-6 col-md-6">
+	                    <a href="#" class="btn btn-default btn-block usingCanvasBtn">
+	                        Students Can Access Course<br>
+	                        <span class="label label-primary"><span class="usingCanvasTotal">0</span> / <span class="grandTotal">0</span></span> 
+	                        <span class="label label-primary usingCanvasPer">0%</span> 
+	                    </a>
+	                    <a href="#" class="btn btn-default btn-block notUsingCanvasBtn">
+	                        Not Using Canvas<br>
+	                        <span class="label label-default"><span class="notUsingCanvasTotal">0</span> / <span class="grandTotal">0</span></span> 
+	                        <span class="label label-default notUsingCanvasPer">0%</span>
+	                    </a>
+	                </div>
+	            </div>
+	        </div>
+	        <div class="col-lg-6 col-md-6 well">
+	            <div class="row">
+	                <div class="col-lg-6 col-md-6">
+	                    <div id="syllabusState" style="height: 300px;"></div>
+	                </div>
+	                <div class="col-lg-6 col-md-6">
+	                    <a href="#" class="btn btn-default btn-block hasSyllabusBtn">
+	                        Content in Syllabus Page<br>
+	                        <span class="label label-success"><span class="hasSyllabusTotal">0</span> / <span class="usingCanvasTotal">0</span></span> 
+	                        <span class="label label-success hasSyllabusPer">0%</span> 
+	                    </a>
+	                    <a href="#" class="btn btn-default btn-block noSyllabusBtn">
+	                        No Content in Syllabus Page<br>
+	                        <span class="label label-danger"><span class="noSyllabusTotal">0</span> / <span class="usingCanvasTotal">0</span></span> 
+	                        <span class="label label-danger noSyllabusPer">0%</span> 
+	                    </a>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	    <div class="row">
+			<div id="collegeCount" class="well" style="height:800px;"></div>
+	    </div>
+	{% else %}
+		<div class="alert alert-warning" role="alert">No data for the selected term</div>
+	{% endif %}
     <div class="row">
         <div class="panel-group courses" id="accordion">
             {% set account = '' %}
